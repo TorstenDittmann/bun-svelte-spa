@@ -1,0 +1,16 @@
+{
+	"name": "template",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"dependencies": {
+		"svelte": "^5",
+		"bun-svelte-spa": "^1"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	}
+}

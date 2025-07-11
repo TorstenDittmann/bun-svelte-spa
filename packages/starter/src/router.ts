@@ -1,8 +1,8 @@
-import type { Route } from "bun-svelte-spa/runtime";
+import { create_goto, create_routes } from "bun-svelte-spa/runtime";
 import About from "./routes/about.svelte";
 import Index from "./routes/index.svelte";
 
-export default [
+export const routes = create_routes([
 	{
 		path: "/",
 		component: Index,
@@ -11,4 +11,6 @@ export default [
 		path: "/about",
 		component: About,
 	},
-] satisfies Route[];
+]);
+
+export const goto = create_goto(routes);

@@ -3,7 +3,7 @@
 
 	/**
 	 * Component props
-	 * @type {{ routes: import('./router').Route[], fallback?: import('svelte').Component | null }}
+	 * @type {{ routes: readonly import('./router').Route[], fallback?: import('svelte').Component | null }}
 	 */
 	let { routes = [], fallback = null } = $props();
 
@@ -97,13 +97,6 @@
 	}
 
 	/**
-	 * Handles popstate events (back/forward buttons)
-	 */
-	function handlePopState() {
-		updateRoute();
-	}
-
-	/**
 	 * Handles click events on links to enable SPA navigation
 	 * @param {Event} event - The click event
 	 */
@@ -120,11 +113,13 @@
 	// Initialize router on mount
 	onMount(() => {
 		updateRoute();
-		window.addEventListener("popstate", handlePopState);
+		window.addEventListener("goto", updateRoute);
+		window.addEventListener("popstate", updateRoute);
 		document.addEventListener("click", handleClick);
 
 		return () => {
-			window.removeEventListener("popstate", handlePopState);
+			window.removeEventListener("goto", updateRoute);
+			window.removeEventListener("popstate", updateRoute);
 			document.removeEventListener("click", handleClick);
 		};
 	});

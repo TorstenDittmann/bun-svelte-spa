@@ -29,12 +29,27 @@
     "packages/framework": {
       "name": "bun-svelte-spa",
       "version": "0.1.0",
+      "dependencies": {
+        "bun-plugin-svelte": "^0.0.6",
+      },
       "devDependencies": {
         "@types/bun": "latest",
-        "bun-plugin-svelte": "^0.0.6",
       },
       "peerDependencies": {
         "svelte": "^5.0.0",
+      },
+    },
+    "packages/starter": {
+      "name": "template",
+      "dependencies": {
+        "bun-svelte-spa": "workspace:*",
+        "svelte": "^5",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
       },
     },
   },
@@ -128,6 +143,8 @@
     "svelte": ["svelte@5.35.6", "", { "dependencies": { "@ampproject/remapping": "^2.3.0", "@jridgewell/sourcemap-codec": "^1.5.0", "@sveltejs/acorn-typescript": "^1.0.5", "@types/estree": "^1.0.5", "acorn": "^8.12.1", "aria-query": "^5.3.1", "axobject-query": "^4.1.0", "clsx": "^2.1.1", "esm-env": "^1.2.1", "esrap": "^2.1.0", "is-reference": "^3.0.3", "locate-character": "^3.0.0", "magic-string": "^0.30.11", "zimmerframe": "^1.1.2" } }, "sha512-p7PVLQYrvCxJuxzGfOv/l71hVuHC6EZk5UDjbt/bndMYaBcUV5sFjDsj+PSIYvz1vcfbG6inX83/xIUeik1xGA=="],
 
     "svelte-bun-basic-example": ["svelte-bun-basic-example@workspace:examples/basic"],
+
+    "template": ["template@workspace:packages/starter"],
 
     "typescript": ["typescript@5.8.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ=="],
 

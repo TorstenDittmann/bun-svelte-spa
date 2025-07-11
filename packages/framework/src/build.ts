@@ -21,7 +21,7 @@ export async function build(options: Partial<BuildConfig>) {
 		plugins,
 	});
 
-	const index_html = await Bun.file("./dist/index.html");
+	const index_html = Bun.file("./dist/index.html");
 	await Promise.all([
 		Bun.write("./dist/200.html", index_html),
 		Bun.write("./dist/404.html", index_html),

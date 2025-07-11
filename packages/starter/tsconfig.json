@@ -5,6 +5,7 @@
 		"target": "ESNext",
 		"module": "Preserve",
 		"moduleDetection": "force",
+		"jsx": "react-jsx",
 		"allowJs": true,
 
 		// Bundler mode
@@ -20,7 +21,11 @@
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
 
-		// Alias paths
+		// Some stricter flags (disabled by default)
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noPropertyAccessFromIndexSignature": false,
+
 		"paths": {
 			"@lib/*": ["./src/lib/*"],
 			"@routes/*": ["./src/routes/*"],
