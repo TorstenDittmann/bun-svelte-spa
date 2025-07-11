@@ -1,4 +1,4 @@
-import { dev } from "svelte-bun-framework";
+import { dev } from "bun-svelte-spa";
 import entrypoint from "./src/index.html";
 
 dev(entrypoint);

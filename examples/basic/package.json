@@ -6,13 +6,12 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun run build.ts",
-		"dev": "bun run --watch build.ts",
-		"serve": "bun run --hot src/app.ts"
+		"dev": "bun run dev.ts"
 	},
 	"dependencies": {
 		"launch.css": "^1.1.6",
 		"svelte": "^5.35.6",
-		"svelte-bun-framework": "workspace:*"
+		"bun-svelte-spa": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",

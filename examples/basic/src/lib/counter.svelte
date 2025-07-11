@@ -1,9 +1,9 @@
 <script>
-let counter = $state(0);
+	let counter = $state(0);
 
-function increment() {
-	counter++;
-}
+	function increment() {
+		counter++;
+	}
 </script>
 
 <button onclick={increment}>{counter}++</button>

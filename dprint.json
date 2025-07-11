@@ -6,7 +6,9 @@
 	"markdown": {},
 	"toml": {},
 	"malva": {},
-	"markup": {},
+	"markup": {
+		"scriptIndent": true
+	},
 	"yaml": {},
 	"excludes": ["**/node_modules"],
 	"plugins": [

@@ -1,15 +1,16 @@
 {
-	"name": "svelte-bun-framework",
+	"name": "bun-svelte-spa",
 	"version": "0.1.0",
 	"description": "A simple Svelte framework for Bun",
 	"main": "src/index.ts",
 	"module": "src/index.ts",
-	"types": "src/index.d.ts",
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./src/index.ts",
-			"types": "./src/index.d.ts"
+			"import": "./src/index.ts"
+		},
+		"./runtime": {
+			"import": "./src/runtime/index.ts"
 		}
 	},
 	"files": [

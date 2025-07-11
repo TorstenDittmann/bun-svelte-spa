@@ -1,5 +1,6 @@
-<script>
-import Counter from "./counter.svelte";
+<script lang="ts">
+	import { Router } from "svelte-bun-framework/runtime";
+	import routes from "./routes";
 </script>
 
 <header>
@@ -7,11 +8,11 @@ import Counter from "./counter.svelte";
 		<a href="/">svelte+bun</a>
 		<menu>
 			<li><a href="/" aria-current="page">Link</a></li>
-			<li><a href="/">Link</a></li>
+			<li><a href="/about">Link</a></li>
 		</menu>
 	</nav>
 </header>
 
 <main>
-	<Counter />
+	<Router {routes} />
 </main>

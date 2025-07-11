@@ -20,10 +20,10 @@
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
 
-		// Some stricter flags (disabled by default)
-		"noUnusedLocals": false,
-		"noUnusedParameters": false,
-		"noPropertyAccessFromIndexSignature": false
-	},
-	"exclude": ["**/node_modules"]
+		// Alias paths
+		"paths": {
+			"@lib/*": ["./src/lib/*"],
+			"@routes/*": ["./src/routes/*"]
+		}
+	}
 }
