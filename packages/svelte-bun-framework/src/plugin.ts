@@ -1,8 +1,8 @@
-import { type BunPlugin } from "bun";
+import type { BunPlugin } from "bun";
 
 const build_cache = new Map<string, string>();
 
-const plugin: BunPlugin = {
+export const svelte_plugin: BunPlugin = {
 	name: "svelte loader",
 	async setup(build) {
 		const { compile } = await import("svelte/compiler");
@@ -31,4 +31,3 @@ const plugin: BunPlugin = {
 	},
 	target: "bun",
 };
-export default plugin;

@@ -1,0 +1,37 @@
+{
+	"name": "svelte-bun-framework",
+	"version": "0.1.0",
+	"description": "A simple Svelte framework for Bun",
+	"main": "src/index.ts",
+	"module": "src/index.ts",
+	"types": "src/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./src/index.ts",
+			"types": "./src/index.d.ts"
+		}
+	},
+	"files": [
+		"src"
+	],
+	"scripts": {
+		"build": "echo 'No build needed - Bun runs TypeScript directly'",
+		"test": "echo 'No tests yet'"
+	},
+	"keywords": [
+		"svelte",
+		"bun",
+		"framework",
+		"build-tool"
+	],
+	"author": "",
+	"license": "MIT",
+	"peerDependencies": {
+		"svelte": "^5.0.0"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"bun-plugin-svelte": "^0.0.6"
+	}
+}

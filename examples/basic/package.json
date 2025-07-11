@@ -1,0 +1,21 @@
+{
+	"name": "svelte-bun-basic-example",
+	"version": "0.1.0",
+	"description": "Basic example application using svelte-bun-framework",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "bun run build.ts",
+		"dev": "bun run --watch build.ts",
+		"serve": "bun run --hot src/app.ts"
+	},
+	"dependencies": {
+		"launch.css": "^1.1.6",
+		"svelte": "^5.35.6",
+		"svelte-bun-framework": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"typescript": "^5"
+	}
+}

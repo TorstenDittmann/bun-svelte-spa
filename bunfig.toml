@@ -1,2 +1,0 @@
-[serve.static]
-plugins = ["./plugins/svelte.ts"]
