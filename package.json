@@ -1,0 +1,15 @@
+{
+  "name": "svelte-bun-poc",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "launch.css": "^1.1.6",
+    "svelte": "^5.35.6"
+  }
+}
