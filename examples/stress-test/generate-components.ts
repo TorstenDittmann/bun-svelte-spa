@@ -6,7 +6,7 @@ const COMPONENTS_DIR = "src/components/generated";
 
 // Generate a simple component
 function generateSimpleComponent(name: string, index: number): string {
-  return `<script lang="ts">
+	return `<script lang="ts">
   let componentId = ${index};
   let name = "${name}";
 </script>
@@ -20,7 +20,7 @@ function generateSimpleComponent(name: string, index: number): string {
 
 // Generate component with props
 function generateComponentWithProps(name: string, index: number): string {
-  return `<script lang="ts">
+	return `<script lang="ts">
   export let title: string = "Default Title";
   export let count: number = 0;
   export let isActive: boolean = false;
@@ -38,7 +38,7 @@ function generateComponentWithProps(name: string, index: number): string {
 
 // Generate component with reactive state
 function generateComponentWithState(name: string, index: number): string {
-  return `<script lang="ts">
+	return `<script lang="ts">
   let count = 0;
   let clicks = 0;
   let componentId = ${index};
@@ -73,7 +73,7 @@ function generateComponentWithState(name: string, index: number): string {
 
 // Generate component with events
 function generateComponentWithEvents(name: string, index: number): string {
-  return `<script lang="ts">
+	return `<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   
   const dispatch = createEventDispatcher<{
@@ -117,7 +117,7 @@ function generateComponentWithEvents(name: string, index: number): string {
 
 // Generate component with slot for children
 function generateComponentWithChildren(name: string, index: number): string {
-  return `<script lang="ts">
+	return `<script lang="ts">
   export let title: string = "Container Component";
   let componentId = ${index};
   let childrenCount = 0;
@@ -149,51 +149,51 @@ function generateComponentWithChildren(name: string, index: number): string {
 
 // Component types for variety
 const componentTypes = [
-  "simple",
-  "with-props", 
-  "with-state",
-  "with-events",
-  "with-children"
+	"simple",
+	"with-props",
+	"with-state",
+	"with-events",
+	"with-children",
 ] as const;
 
 type ComponentType = typeof componentTypes[number];
 
 // Generate component based on type
 function generateComponent(name: string, index: number, type: ComponentType): string {
-  switch (type) {
-    case "simple":
-      return generateSimpleComponent(name, index);
-    case "with-props":
-      return generateComponentWithProps(name, index);
-    case "with-state":
-      return generateComponentWithState(name, index);
-    case "with-events":
-      return generateComponentWithEvents(name, index);
-    case "with-children":
-      return generateComponentWithChildren(name, index);
-    default:
-      return generateSimpleComponent(name, index);
-  }
+	switch (type) {
+		case "simple":
+			return generateSimpleComponent(name, index);
+		case "with-props":
+			return generateComponentWithProps(name, index);
+		case "with-state":
+			return generateComponentWithState(name, index);
+		case "with-events":
+			return generateComponentWithEvents(name, index);
+		case "with-children":
+			return generateComponentWithChildren(name, index);
+		default:
+			return generateSimpleComponent(name, index);
+	}
 }
 
 // Generate index file that exports all components
 function generateIndexFile(componentNames: string[]): string {
-  const imports = componentNames
-    .map((name, index) => `import Component${index} from './${name}.svelte';`)
-    .join('\n');
-  
-  const exports = componentNames
-    .map((_, index) => `  Component${index},`)
-    .join('\n');
-  
-  return `${imports}
+	const imports = componentNames
+		.map((name, index) => `import Component${index} from './${name}.svelte';`)
+		.join("\n");
+
+	const exports = componentNames
+		.map((_, index) => `  Component${index},`)
+		.join("\n");
+
+	return `${imports}
 
 export {
 ${exports}
 };
 
 export const componentList = [
-${componentNames.map((_, index) => `  Component${index},`).join('\n')}
+${componentNames.map((_, index) => `  Component${index},`).join("\n")}
 ];
 
 export const componentCount = ${componentNames.length};
@@ -201,61 +201,61 @@ export const componentCount = ${componentNames.length};
 }
 
 async function main() {
-  console.log(`🚀 Generating ${COMPONENT_COUNT} Svelte components...`);
-  
-  // Create the generated components directory
-  await mkdir(COMPONENTS_DIR, { recursive: true });
-  
-  const componentNames: string[] = [];
-  const startTime = Date.now();
-  
-  // Generate components in batches for better performance
-  const batchSize = 100;
-  const totalBatches = Math.ceil(COMPONENT_COUNT / batchSize);
-  
-  for (let batch = 0; batch < totalBatches; batch++) {
-    const batchStart = batch * batchSize;
-    const batchEnd = Math.min(batchStart + batchSize, COMPONENT_COUNT);
-    const promises: Promise<void>[] = [];
-    
-    for (let i = batchStart; i < batchEnd; i++) {
-      const type = componentTypes[i % componentTypes.length];
-      const name = `Component${i.toString().padStart(4, '0')}`;
-      const fileName = `${name}.svelte`;
-      const filePath = join(COMPONENTS_DIR, fileName);
-      
-      componentNames.push(name);
-      
-      const content = generateComponent(name, i, type);
-      promises.push(writeFile(filePath, content));
-    }
-    
-    await Promise.all(promises);
-    
-    const progress = ((batch + 1) / totalBatches * 100).toFixed(1);
-    console.log(`📦 Batch ${batch + 1}/${totalBatches} complete (${progress}%)`);
-  }
-  
-  // Generate index file
-  console.log('📋 Generating index file...');
-  const indexContent = generateIndexFile(componentNames);
-  await writeFile(join(COMPONENTS_DIR, 'index.ts'), indexContent);
-  
-  const endTime = Date.now();
-  const duration = (endTime - startTime) / 1000;
-  
-  console.log(`✅ Successfully generated ${COMPONENT_COUNT} components in ${duration.toFixed(2)}s`);
-  console.log(`📁 Components created in: ${COMPONENTS_DIR}`);
-  console.log(`📊 Component distribution:`);
-  
-  componentTypes.forEach(type => {
-    const count = Math.ceil(COMPONENT_COUNT / componentTypes.length);
-    console.log(`   - ${type}: ~${count} components`);
-  });
-  
-  console.log('\n🏗️  Run "bun run build" to test build performance!');
+	console.log(`🚀 Generating ${COMPONENT_COUNT} Svelte components...`);
+
+	// Create the generated components directory
+	await mkdir(COMPONENTS_DIR, { recursive: true });
+
+	const componentNames: string[] = [];
+	const startTime = Date.now();
+
+	// Generate components in batches for better performance
+	const batchSize = 100;
+	const totalBatches = Math.ceil(COMPONENT_COUNT / batchSize);
+
+	for (let batch = 0; batch < totalBatches; batch++) {
+		const batchStart = batch * batchSize;
+		const batchEnd = Math.min(batchStart + batchSize, COMPONENT_COUNT);
+		const promises: Promise<void>[] = [];
+
+		for (let i = batchStart; i < batchEnd; i++) {
+			const type = componentTypes[i % componentTypes.length];
+			const name = `Component${i.toString().padStart(4, "0")}`;
+			const fileName = `${name}.svelte`;
+			const filePath = join(COMPONENTS_DIR, fileName);
+
+			componentNames.push(name);
+
+			const content = generateComponent(name, i, type);
+			promises.push(writeFile(filePath, content));
+		}
+
+		await Promise.all(promises);
+
+		const progress = ((batch + 1) / totalBatches * 100).toFixed(1);
+		console.log(`📦 Batch ${batch + 1}/${totalBatches} complete (${progress}%)`);
+	}
+
+	// Generate index file
+	console.log("📋 Generating index file...");
+	const indexContent = generateIndexFile(componentNames);
+	await writeFile(join(COMPONENTS_DIR, "index.ts"), indexContent);
+
+	const endTime = Date.now();
+	const duration = (endTime - startTime) / 1000;
+
+	console.log(`✅ Successfully generated ${COMPONENT_COUNT} components in ${duration.toFixed(2)}s`);
+	console.log(`📁 Components created in: ${COMPONENTS_DIR}`);
+	console.log(`📊 Component distribution:`);
+
+	componentTypes.forEach(type => {
+		const count = Math.ceil(COMPONENT_COUNT / componentTypes.length);
+		console.log(`   - ${type}: ~${count} components`);
+	});
+
+	console.log("\n🏗️  Run \"bun run build\" to test build performance!");
 }
 
 if (import.meta.main) {
-  main().catch(console.error);
+	main().catch(console.error);
 }

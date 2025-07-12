@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { goto } from "../router";
+	import { goto } from "@router";
 
-	let searchQuery = "";
+	let searchQuery = $state("");
 
 	function handleGoHome() {
 		goto("/");
@@ -17,7 +17,7 @@
 
 	function handleSearch() {
 		if (searchQuery.trim()) {
-			goto(`/search?q=${encodeURIComponent(searchQuery)}`);
+			goto("/search");
 		}
 	}
 

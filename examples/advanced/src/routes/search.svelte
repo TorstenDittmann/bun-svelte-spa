@@ -1,37 +1,38 @@
 <script lang="ts">
+	import { api } from "@lib/api";
+	import type { Album, Post, User } from "@lib/api";
+	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
+	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
+	import SearchBar from "@lib/components/SearchBar.svelte";
+	import UserCard from "@lib/components/UserCard.svelte";
+	import { debouncedSearch, searchQuery } from "@lib/stores";
+	import { goto } from "@router";
 	import { onMount } from "svelte";
-	import { api } from "../lib/api";
-	import type { Album, Post, User } from "../lib/api";
-	import ErrorMessage from "../lib/components/ErrorMessage.svelte";
-	import LoadingSpinner from "../lib/components/LoadingSpinner.svelte";
-	import SearchBar from "../lib/components/SearchBar.svelte";
-	import UserCard from "../lib/components/UserCard.svelte";
-	import { debouncedSearch, searchQuery } from "../lib/stores";
-	import { goto } from "../router";
+	let loading = $state(false);
+	let error = $state<string | null>(null);
+	let searchTerm = $state("");
+	let activeTab = $state<"all" | "users" | "posts" | "albums">("all");
 
-	let loading = false;
-	let error: string | null = null;
-	let searchTerm = "";
-	let activeTab: "all" | "users" | "posts" | "albums" = "all";
+	let allUsers = $state<User[]>([]);
+	let allPosts = $state<Post[]>([]);
+	let allAlbums = $state<Album[]>([]);
 
-	let allUsers: User[] = [];
-	let allPosts: Post[] = [];
-	let allAlbums: Album[] = [];
+	let filteredUsers = $state<User[]>([]);
+	let filteredPosts = $state<Post[]>([]);
+	let filteredAlbums = $state<Album[]>([]);
 
-	let filteredUsers: User[] = [];
-	let filteredPosts: Post[] = [];
-	let filteredAlbums: Album[] = [];
-
-	$: {
+	$effect(() => {
 		if (searchTerm.trim()) {
 			filterResults(searchTerm);
 		} else {
 			clearResults();
 		}
-	}
+	});
 
-	$: totalResults = filteredUsers.length + filteredPosts.length
-		+ filteredAlbums.length;
+	const totalResults = $derived(
+		filteredUsers.length + filteredPosts.length
+			+ filteredAlbums.length,
+	);
 
 	onMount(async () => {
 		try {
@@ -91,15 +92,15 @@
 	}
 
 	function handleViewUser(userId: number) {
-		goto(`/users/${userId}`);
+		goto("/users/:id", { id: userId.toString() });
 	}
 
 	function handleViewPost(postId: number) {
-		goto(`/posts/${postId}`);
+		goto("/posts/:id", { id: postId.toString() });
 	}
 
 	function handleViewAlbum(albumId: number) {
-		goto(`/albums/${albumId}`);
+		goto("/albums/:id", { id: albumId.toString() });
 	}
 
 	function truncateText(text: string, maxLength: number): string {

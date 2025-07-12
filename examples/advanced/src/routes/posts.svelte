@@ -1,29 +1,33 @@
 <script lang="ts">
+	import { api } from "@lib/api";
+	import type { Post } from "@lib/api";
+	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
+	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
+	import SearchBar from "@lib/components/SearchBar.svelte";
+	import { filteredPosts, posts, searchQuery } from "@lib/stores";
+	import { goto } from "@router";
 	import { onMount } from "svelte";
-	import { api } from "../lib/api";
-	import type { Post } from "../lib/api";
-	import ErrorMessage from "../lib/components/ErrorMessage.svelte";
-	import LoadingSpinner from "../lib/components/LoadingSpinner.svelte";
-	import SearchBar from "../lib/components/SearchBar.svelte";
-	import { filteredPosts, posts, searchQuery } from "../lib/stores";
-	import { goto } from "../router";
 
-	let loading = true;
-	let error: string | null = null;
-	let viewMode: "grid" | "list" = "list";
-	let sortBy: "title" | "id" | "userId" = "id";
-	let sortDirection: "asc" | "desc" = "desc";
-	let searchTerm = "";
-	let currentPage = 1;
-	let postsPerPage = 12;
+	let loading = $state(true);
+	let error = $state<string | null>(null);
+	let viewMode = $state<"grid" | "list">("list");
+	let sortBy = $state<"title" | "id" | "userId">("id");
+	let sortDirection = $state<"asc" | "desc">("desc");
+	let searchTerm = $state("");
+	let currentPage = $state(1);
+	let postsPerPage = $state(12);
 
-	$: displayPosts = sortPosts($filteredPosts, sortBy, sortDirection);
-	$: paginatedPosts = paginate(
+	const displayPosts = $derived(
+		sortPosts($filteredPosts, sortBy, sortDirection),
+	);
+	const paginatedPosts = $derived(paginate(
 		displayPosts,
 		currentPage,
 		postsPerPage,
+	));
+	const totalPages = $derived(
+		Math.ceil(displayPosts.length / postsPerPage),
 	);
-	$: totalPages = Math.ceil(displayPosts.length / postsPerPage);
 
 	onMount(async () => {
 		try {
@@ -105,11 +109,11 @@
 	}
 
 	function handleViewPost(postId: number) {
-		goto(`/posts/${postId}`);
+		goto("/posts/:id", { id: postId.toString() });
 	}
 
 	function handleViewUser(userId: number) {
-		goto(`/users/${userId}`);
+		goto("/users/:id", { id: userId.toString() });
 	}
 
 	function handleRetry() {

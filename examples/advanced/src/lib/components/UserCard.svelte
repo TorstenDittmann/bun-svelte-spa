@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { User } from "../api";
+	import type { User } from "@lib/api";
 
 	export let user: User;
 	export let showActions: boolean = true;

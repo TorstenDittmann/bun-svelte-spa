@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { debouncedSearch } from "../stores";
+	import { debouncedSearch } from "@lib/stores";
 
-	export let placeholder: string = "Search...";
-	export let value: string = "";
-	export let disabled: boolean = false;
-	export let showClearButton: boolean = true;
+	let {
+		placeholder = "Search...",
+		value = $bindable(""),
+		disabled = false,
+		showClearButton = true,
+	} = $props();
 
-	let inputElement: HTMLInputElement;
+	let inputElement = $state<HTMLInputElement>();
 
 	function handleInput(event: Event) {
 		const target = event.target as HTMLInputElement;

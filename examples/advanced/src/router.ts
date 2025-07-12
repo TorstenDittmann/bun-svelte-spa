@@ -1,16 +1,16 @@
+import AlbumDetail from "@routes/album-detail.svelte";
+import Albums from "@routes/albums.svelte";
+import Dashboard from "@routes/dashboard.svelte";
+import Home from "@routes/home.svelte";
+import NotFound from "@routes/not-found.svelte";
+import PostDetail from "@routes/post-detail.svelte";
+import Posts from "@routes/posts.svelte";
+import Search from "@routes/search.svelte";
+import UserAlbums from "@routes/user-albums.svelte";
+import UserDetail from "@routes/user-detail.svelte";
+import UserPosts from "@routes/user-posts.svelte";
+import Users from "@routes/users.svelte";
 import { create_goto, create_routes } from "bun-svelte-spa/runtime";
-import AlbumDetail from "./routes/album-detail.svelte";
-import Albums from "./routes/albums.svelte";
-import Dashboard from "./routes/dashboard.svelte";
-import Home from "./routes/home.svelte";
-import NotFound from "./routes/not-found.svelte";
-import PostDetail from "./routes/post-detail.svelte";
-import Posts from "./routes/posts.svelte";
-import Search from "./routes/search.svelte";
-import UserAlbums from "./routes/user-albums.svelte";
-import UserDetail from "./routes/user-detail.svelte";
-import UserPosts from "./routes/user-posts.svelte";
-import Users from "./routes/users.svelte";
 
 export const routes = create_routes([
 	{
@@ -56,10 +56,6 @@ export const routes = create_routes([
 	{
 		path: "/search",
 		component: Search,
-	},
-	{
-		path: "*",
-		component: NotFound,
 	},
 ]);
 

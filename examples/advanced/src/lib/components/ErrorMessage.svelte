@@ -1,10 +1,17 @@
 <script lang="ts">
-	export let error: { message: string; status?: number } | null =
-		null;
-	export let title: string = "Something went wrong";
-	export let showRetry: boolean = true;
-	export let retryText: string = "Try again";
-	export let onRetry: (() => void) | undefined = undefined;
+	let {
+		error = null,
+		title = "Something went wrong",
+		showRetry = true,
+		retryText = "Try again",
+		onRetry = undefined,
+	}: {
+		error?: { message: string; status?: number } | null;
+		title?: string;
+		showRetry?: boolean;
+		retryText?: string;
+		onRetry?: (() => void) | undefined;
+	} = $props();
 
 	function handleRetry() {
 		if (onRetry) {

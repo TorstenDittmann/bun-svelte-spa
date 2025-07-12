@@ -1,8 +1,8 @@
 <script>
-	import { api } from "../lib/api";
-	import ErrorMessage from "../lib/components/ErrorMessage.svelte";
-	import LoadingSpinner from "../lib/components/LoadingSpinner.svelte";
-	import { goto } from "../router";
+	import { api } from "@lib/api";
+	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
+	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
+	import { goto } from "@router";
 
 	let postId = $state(0);
 	let post = $state(null);

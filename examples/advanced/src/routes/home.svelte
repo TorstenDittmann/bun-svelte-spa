@@ -5,7 +5,7 @@
 	import { goto } from "@router";
 	import { onMount } from "svelte";
 
-	let featuresData = [
+	const featuresData = [
 		{
 			title: "Modern Routing",
 			description:
@@ -43,8 +43,8 @@
 		},
 	];
 
-	let loading = false;
-	let statsLoaded = false;
+	let loading = $state(false);
+	let statsLoaded = $state(false);
 
 	onMount(async () => {
 		// Load initial stats data if not already loaded
@@ -67,7 +67,13 @@
 	});
 
 	function handleFeatureClick(link: string) {
-		goto(link);
+		if (
+			link === "/users" || link === "/posts"
+			|| link === "/dashboard" || link === "/albums"
+			|| link === "/search"
+		) {
+			goto(link);
+		}
 	}
 </script>
 
