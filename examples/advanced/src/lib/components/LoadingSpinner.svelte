@@ -1,7 +1,13 @@
 <script lang="ts">
-	export let size: "sm" | "md" | "lg" = "md";
-	export let color: string = "var(--color-primary)";
-	export let text: string = "";
+	let {
+		size = "md",
+		color = "var(--color-primary)",
+		text = "",
+	}: {
+		size?: "sm" | "md" | "lg";
+		color?: string;
+		text?: string;
+	} = $props();
 
 	const sizeClasses = {
 		sm: "w-4 h-4",

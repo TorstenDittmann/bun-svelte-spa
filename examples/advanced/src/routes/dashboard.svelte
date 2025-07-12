@@ -1,17 +1,17 @@
 <script lang="ts">
+	import { api } from "@lib/api";
+	import type { Post, User } from "@lib/api";
+	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
+	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
+	import UserCard from "@lib/components/UserCard.svelte";
+	import { albums, posts, stats, users } from "@lib/stores";
+	import { goto } from "@router";
 	import { onMount } from "svelte";
-	import { api } from "../lib/api";
-	import type { Post, User } from "../lib/api";
-	import ErrorMessage from "../lib/components/ErrorMessage.svelte";
-	import LoadingSpinner from "../lib/components/LoadingSpinner.svelte";
-	import UserCard from "../lib/components/UserCard.svelte";
-	import { albums, posts, stats, users } from "../lib/stores";
-	import { goto } from "../router";
 
-	let recentUsers: User[] = [];
-	let recentPosts: Post[] = [];
-	let loading = true;
-	let error: string | null = null;
+	let recentUsers = $state<User[]>([]);
+	let recentPosts = $state<Post[]>([]);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
 
 	onMount(async () => {
 		try {
@@ -52,7 +52,7 @@
 	}
 
 	function handleViewPost(postId: number) {
-		goto(`/posts/${postId}`);
+		goto(`/posts/:id`, { id: postId.toString() });
 	}
 </script>
 

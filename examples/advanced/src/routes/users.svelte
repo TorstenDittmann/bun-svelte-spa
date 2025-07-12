@@ -1,22 +1,26 @@
 <script lang="ts">
+	import { api } from "@lib/api";
+	import type { User } from "@lib/api";
+	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
+	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
+	import SearchBar from "@lib/components/SearchBar.svelte";
+	import UserCard from "@lib/components/UserCard.svelte";
+	import { filteredUsers, searchQuery, users } from "@lib/stores";
+	import { goto } from "@router";
 	import { onMount } from "svelte";
-	import { api } from "../lib/api";
-	import type { User } from "../lib/api";
-	import ErrorMessage from "../lib/components/ErrorMessage.svelte";
-	import LoadingSpinner from "../lib/components/LoadingSpinner.svelte";
-	import SearchBar from "../lib/components/SearchBar.svelte";
-	import UserCard from "../lib/components/UserCard.svelte";
-	import { filteredUsers, searchQuery, users } from "../lib/stores";
-	import { goto } from "../router";
 
-	let loading = true;
-	let error: string | null = null;
-	let viewMode: "grid" | "list" = "grid";
-	let sortBy: "name" | "username" | "email" | "company" = "name";
-	let sortDirection: "asc" | "desc" = "asc";
-	let searchTerm = "";
+	let loading = $state(true);
+	let error = $state<string | null>(null);
+	let viewMode = $state<"grid" | "list">("grid");
+	let sortBy = $state<"name" | "username" | "email" | "company">(
+		"name",
+	);
+	let sortDirection = $state<"asc" | "desc">("asc");
+	let searchTerm = $state("");
 
-	$: displayUsers = sortUsers($filteredUsers, sortBy, sortDirection);
+	const displayUsers = $derived(
+		sortUsers($filteredUsers, sortBy, sortDirection),
+	);
 
 	onMount(async () => {
 		try {
@@ -86,7 +90,7 @@
 	}
 
 	function handleViewUser(userId: number) {
-		goto(`/users/${userId}`);
+		goto("/users/:id", { id: userId.toString() });
 	}
 
 	function handleRetry() {

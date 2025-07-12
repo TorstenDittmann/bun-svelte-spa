@@ -1,26 +1,33 @@
 <script lang="ts">
+	import { api } from "@lib/api";
+	import type { Album, Post, User } from "@lib/api";
+	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
+	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
+	import { currentUser, userAlbums, userPosts } from "@lib/stores";
+	import { goto } from "@router";
 	import { onMount } from "svelte";
-	import { api } from "../lib/api";
-	import type { Album, Post, User } from "../lib/api";
-	import ErrorMessage from "../lib/components/ErrorMessage.svelte";
-	import LoadingSpinner from "../lib/components/LoadingSpinner.svelte";
-	import { currentUser, userAlbums, userPosts } from "../lib/stores";
-	import { goto } from "../router";
-
 	// Get user ID from URL
-	let userId: number;
-	let loading = true;
-	let error: string | null = null;
-	let activeTab: "profile" | "posts" | "albums" = "profile";
-	let user: User | null = null;
-	let posts: Post[] = [];
-	let albums: Album[] = [];
+	let userId = $state<number>(0);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
+	let activeTab = $state<"profile" | "posts" | "albums">("profile");
+	let user = $state<User | null>(null);
+	let posts = $state<Post[]>([]);
+	let albums = $state<Album[]>([]);
 
 	onMount(() => {
 		// Extract user ID from URL
 		const pathSegments = window.location.pathname.split("/");
 		const idIndex = pathSegments.indexOf("users") + 1;
-		userId = parseInt(pathSegments[idIndex]);
+		const userIdStr = pathSegments[idIndex];
+
+		if (!userIdStr) {
+			error = "Invalid user ID";
+			loading = false;
+			return;
+		}
+
+		userId = parseInt(userIdStr);
 
 		if (isNaN(userId)) {
 			error = "Invalid user ID";
@@ -61,19 +68,19 @@
 	}
 
 	function handleViewPosts() {
-		goto(`/users/${userId}/posts`);
+		goto("/users/:id/posts", { id: userId.toString() });
 	}
 
 	function handleViewAlbums() {
-		goto(`/users/${userId}/albums`);
+		goto("/users/:id/albums", { id: userId.toString() });
 	}
 
 	function handleViewPost(postId: number) {
-		goto(`/posts/${postId}`);
+		goto("/posts/:id", { id: postId.toString() });
 	}
 
 	function handleViewAlbum(albumId: number) {
-		goto(`/albums/${albumId}`);
+		goto("/albums/:id", { id: albumId.toString() });
 	}
 
 	function handleBackToUsers() {
