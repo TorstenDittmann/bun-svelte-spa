@@ -1,7 +1,7 @@
 {
 	"name": "svelte-bun-tailwind-example",
 	"version": "0.1.0",
-	"description": "Tailwind example application using svelte-bun-framework",
+	"description": "Tailwind example application using bun-svelte-spa",
 	"private": true,
 	"type": "module",
 	"scripts": {

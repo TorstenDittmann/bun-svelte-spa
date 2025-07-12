@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Router } from "svelte-bun-framework/runtime";
+	import { Router } from "bun-svelte-spa/runtime";
 	import { routes } from "./router";
 </script>
 

@@ -1,7 +1,7 @@
 {
 	"name": "svelte-bun-advanced-example",
 	"version": "0.1.0",
-	"description": "Advanced example application with routing, data loading, and CSS styling using svelte-bun-framework",
+	"description": "Advanced example application with routing, data loading, and CSS styling using bun-svelte-spa",
 	"private": true,
 	"type": "module",
 	"scripts": {

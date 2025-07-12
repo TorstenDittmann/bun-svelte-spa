@@ -1,7 +1,7 @@
 {
 	"name": "svelte-bun-basic-example",
 	"version": "0.1.0",
-	"description": "Basic example application using svelte-bun-framework",
+	"description": "Basic example application using bun-svelte-spa",
 	"private": true,
 	"type": "module",
 	"scripts": {
