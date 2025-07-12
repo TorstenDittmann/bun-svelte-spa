@@ -1,0 +1,20 @@
+{
+	"name": "svelte-bun-advanced-example",
+	"version": "0.1.0",
+	"description": "Advanced example application with routing, data loading, and CSS styling using svelte-bun-framework",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "bun run build.ts",
+		"dev": "bun run dev.ts"
+	},
+	"dependencies": {
+		"launch.css": "^1.1.6",
+		"svelte": "^5.35.6",
+		"bun-svelte-spa": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"typescript": "^5"
+	}
+}

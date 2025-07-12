@@ -9,10 +9,8 @@
 		"dev": "bun run dev.ts"
 	},
 	"dependencies": {
-		"bun-plugin-tailwind": "^0.0.15",
 		"bun-svelte-spa": "workspace:*",
-		"svelte": "^5.35.6",
-		"tailwindcss": "^4.1.11"
+		"svelte": "^5.35.6"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
