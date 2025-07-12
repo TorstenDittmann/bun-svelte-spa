@@ -7,9 +7,11 @@
 	"type": "module",
 	"exports": {
 		".": {
+			"bun": "./src/index.ts",
 			"import": "./src/index.ts"
 		},
 		"./runtime": {
+			"bun": "./src/runtime/index.ts",
 			"import": "./src/runtime/index.ts"
 		}
 	},
