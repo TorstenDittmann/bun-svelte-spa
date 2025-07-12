@@ -1,15 +1,124 @@
-# template
+# Svelte Bun SPA Starter Template
 
-To install dependencies:
+A starter template for building Single Page Applications with Svelte 5 and Bun.
+
+## What's Included
+
+- Svelte 5 with TypeScript
+- Client-side routing with type safety
+- Development server with hot reload
+- Production build configuration
+- CSS styling setup
+
+## Getting Started
 
 ```bash
+# Install dependencies
 bun install
+
+# Start development server
+bun run dev
+
+# Build for production
+bun run build
 ```
 
-To run:
+## Development
+
+The development server runs on `http://localhost:3000` with automatic reload when files change.
 
 ```bash
-bun run index.ts
+bun run dev
 ```
 
-This project was created using `bun init` in bun v1.2.18. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+## Building
+
+Create an optimized production build:
+
+```bash
+bun run build
+```
+
+Output files are generated in the `dist/` directory.
+
+## Project Structure
+
+```
+src/
+├── index.html          # HTML entry point
+├── app.ts             # Application entry
+├── app.svelte         # Root component
+├── router.ts          # Route definitions
+├── app.css           # Global styles
+├── routes/           # Page components
+│   ├── index.svelte  # Home page
+│   └── about.svelte  # About page
+└── lib/              # Shared components
+    └── counter.svelte
+```
+
+## Adding Routes
+
+Edit `src/router.ts` to add new routes:
+
+```typescript
+import { create_goto, create_routes } from "bun-svelte-spa/runtime";
+import About from "./routes/about.svelte";
+import Home from "./routes/index.svelte";
+import NewPage from "./routes/new-page.svelte";
+
+export const routes = create_routes([
+	{ path: "/", component: Home },
+	{ path: "/about", component: About },
+	{ path: "/new-page", component: NewPage },
+]);
+
+export const goto = create_goto(routes);
+```
+
+## Navigation
+
+Use the type-safe `goto` function for navigation:
+
+```typescript
+import { goto } from "./router.ts";
+
+// Navigate to a route
+goto("/about");
+```
+
+Or use it in Svelte components:
+
+```svelte
+<script>
+	import { goto } from "../router.ts";
+</script>
+
+<button onclick={() => goto("/about")}>
+	Go to About
+</button>
+```
+
+## Configuration
+
+### TypeScript
+
+TypeScript configuration is in `tsconfig.json`. The setup includes:
+
+- Svelte type definitions
+- Module resolution for `.svelte` files
+- Strict type checking
+
+### Bun
+
+Bun configuration is in `bunfig.toml` with preloads for Svelte plugin support.
+
+## Requirements
+
+- Bun runtime
+- Svelte 5.0+
+- TypeScript 5+
+
+## License
+
+MIT

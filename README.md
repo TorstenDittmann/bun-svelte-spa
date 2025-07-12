@@ -1,91 +1,109 @@
-# Svelte Bun Monorepo
+# Svelte Bun SPA
 
-A monorepo containing a simple Svelte framework for Bun and example applications.
+A monorepo containing a lightweight Svelte SPA framework built for Bun runtime.
 
-## Structure
+## What is this?
 
-```
-├── packages/
-│   └── svelte-bun-framework/    # The core library
-├── examples/
-│   └── basic/                   # Basic example application
-├── build.ts                     # Root build script
-└── README.md                    # This file
-```
+This project provides a simple framework for building Single Page Applications with Svelte 5 and Bun. It includes:
 
-## Getting Started
+- **Framework package** (`bun-svelte-spa`) - Core build tools and runtime router
+- **Starter template** - Ready-to-use project template
+- **Examples** - Sample applications demonstrating usage
 
-### Installation
+## Quick Start
+
+### New Project from Template
 
 ```bash
+# Create a new project from template
+bunx giget gh:torstendittmann/bun-svelte-spa/packages/starter my-app
+cd my-app
+
+# Install dependencies and start developing
 bun install
-```
-
-This will install dependencies for all packages in the workspace.
-
-### Building
-
-```bash
-# Build all packages
-bun run build
-
-# Build with watch mode
 bun run dev
 ```
 
-### Working with Packages
-
-#### Library (`packages/svelte-bun-framework`)
-
-The core Svelte framework for Bun. See the [library README](./packages/svelte-bun-framework/README.md) for detailed usage.
-
-#### Examples (`examples/`)
-
-Sample applications demonstrating the framework usage.
+### Add to Existing Project
 
 ```bash
-# Build the basic example
-cd examples/basic
-bun run build
+# Install the framework
+bun add bun-svelte-spa
 
-# Run in development mode
-bun run dev
+# Add Svelte 5
+bun add svelte
 
-# Serve the example (hot reload)
-bun run serve
+# Create basic files (see Framework Usage below)
 ```
 
-## Workspace Commands
+## Packages
 
-```bash
-# Install all dependencies
-bun install
+### `bun-svelte-spa` (Framework)
 
-# Clean all build outputs
-bun run clean
+Core framework providing:
 
-# Build all packages
-bun run build
+- `build()` - Production build with Svelte compilation
+- `dev()` - Development server with hot reload
+- Runtime router with type-safe navigation
 
-# Development mode (watch)
-bun run dev
-```
+### `template` (Starter)
 
-## Package Dependencies
+A starter template with:
 
-The example applications depend on the library using workspace references:
-
-```json
-{
-	"dependencies": {
-		"svelte-bun-framework": "workspace:*"
-	}
-}
-```
+- Svelte 5 setup
+- TypeScript configuration
+- Routing example
+- Build and dev scripts
 
 ## Development
 
-This monorepo uses Bun workspaces to manage packages and examples. The library in `packages/` contains the core framework, while `examples/` contains sample applications demonstrating usage. Each can be developed independently while sharing dependencies and maintaining consistent tooling.
+```bash
+# Install dependencies
+bun install
+
+# Format code
+bun run format
+
+# Lint code  
+bun run lint
+```
+
+## Framework Usage
+
+```typescript
+import { build, dev } from "bun-svelte-spa";
+
+// Build for production
+await build({
+	entrypoints: ["./src/index.html"],
+	outdir: "./dist",
+});
+
+// Development server
+dev(entrypoint);
+```
+
+## Routing
+
+```typescript
+import { create_goto, create_routes, Router } from "bun-svelte-spa/runtime";
+
+const routes = create_routes([
+	{ path: "/", component: Home },
+	{ path: "/about", component: About },
+]);
+
+const goto = create_goto(routes);
+
+// Type-safe navigation
+goto("/about");
+```
+
+## Requirements
+
+- Bun runtime
+- Svelte 5.0+
+- TypeScript 5+
 
 ## License
 

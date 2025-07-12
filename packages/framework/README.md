@@ -1,111 +1,159 @@
-# Svelte Bun Framework
+# bun-svelte-spa
 
-A simple and lightweight framework for building Svelte applications with Bun.
+A lightweight Svelte SPA framework built for Bun runtime.
 
 ## Installation
 
 ```bash
-bun add svelte-bun-framework
+bun add bun-svelte-spa
 ```
 
-## Usage
+## Features
 
-### Basic Plugin Usage
+- Build Svelte applications with Bun's native speed
+- Development server with hot reload
+- Type-safe client-side router
+- No build step required for development
+- Production builds with automatic asset optimization
+
+## Build API
+
+### `build(options)`
+
+Builds your Svelte application for production.
 
 ```typescript
-import { sveltePlugin } from "svelte-bun-framework";
+import { build } from "bun-svelte-spa";
 
-// Use with Bun's build API
-await Bun.build({
-	entrypoints: ["./src/app.ts"],
+await build({
+	entrypoints: ["./src/index.html"],
 	outdir: "./dist",
-	plugins: [sveltePlugin],
 });
 ```
-
-### Using the Build Helper
-
-```typescript
-import { buildSvelte } from "svelte-bun-framework";
-
-// Build with sensible defaults
-await buildSvelte({
-	entrypoints: ["./src/app.ts"],
-	outdir: "./dist",
-	minify: true,
-});
-```
-
-### Default Import
-
-```typescript
-import sveltePlugin from "svelte-bun-framework";
-
-// Same as importing { sveltePlugin }
-await Bun.build({
-	entrypoints: ["./src/app.ts"],
-	outdir: "./dist",
-	plugins: [sveltePlugin],
-});
-```
-
-> **Note**: No build step is required! Bun runs TypeScript directly, so you can import and use the library immediately.
-
-## API
-
-### `sveltePlugin`
-
-A Bun plugin that compiles `.svelte` files. Includes build caching for better performance.
-
-### `buildSvelte(options: BuildOptions)`
-
-A convenience function that builds your Svelte application with the plugin included.
 
 **Options:**
 
-- `entrypoints: string[]` - Array of entry point files
-- `outdir: string` - Output directory
-- `minify?: boolean` - Whether to minify the output (default: true)
-- `plugins?: BunPlugin[]` - Additional plugins to include
+- All standard Bun build options are supported
+- Svelte plugin is automatically included
+- Creates `200.html` and `404.html` for SPA routing
 
-### `clearCache()`
+### `dev(entrypoint)`
 
-Clears the internal build cache.
+Starts a development server with hot reload.
 
-## Example Project Structure
+```typescript
+import { dev } from "bun-svelte-spa";
+import entrypoint from "./src/index.html";
+
+dev(entrypoint);
+```
+
+## Runtime Router
+
+Type-safe client-side routing for SPAs.
+
+### Basic Setup
+
+```typescript
+import { create_goto, create_routes, Router } from "bun-svelte-spa/runtime";
+import About from "./routes/about.svelte";
+import Home from "./routes/home.svelte";
+
+// Define routes
+const routes = create_routes([
+	{ path: "/", component: Home },
+	{ path: "/about", component: About },
+]);
+
+// Create type-safe navigation
+const goto = create_goto(routes);
+```
+
+### Using in Svelte
+
+```svelte
+<script>
+	import { Router } from "bun-svelte-spa/runtime";
+	import { goto, routes } from "./router.js";
+</script>
+
+<nav>
+	<button onclick={() => goto("/")}>Home</button>
+	<button onclick={() => goto("/about")}>About</button>
+</nav>
+
+<Router {routes} />
+```
+
+### Parameterized Routes
+
+```typescript
+const routes = create_routes([
+	{ path: "/user/:id", component: UserProfile },
+	{ path: "/post/:slug/edit", component: EditPost },
+]);
+
+const goto = create_goto(routes);
+
+// Type-safe parameter passing
+goto("/user/:id", { id: "123" });
+goto("/post/:slug/edit", { slug: "hello-world" });
+```
+
+## Project Structure
 
 ```
 my-app/
 ├── src/
+│   ├── index.html
 │   ├── app.ts
-│   ├── App.svelte
-│   └── components/
-│       └── Counter.svelte
-├── dist/
-├── package.json
-└── build.ts
+│   ├── app.svelte
+│   ├── router.ts
+│   └── routes/
+│       ├── index.svelte
+│       └── about.svelte
+├── dev.ts
+├── build.ts
+└── package.json
+```
+
+## Example Files
+
+**src/index.html:**
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My App</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="./app.ts"></script>
+</body>
+</html>
 ```
 
 **src/app.ts:**
 
 ```typescript
 import { mount } from "svelte";
-import App from "./App.svelte";
+import App from "./app.svelte";
 
 mount(App, {
-	target: document.body,
+	target: document.querySelector("#root")!,
 });
 ```
 
-**build.ts:**
+**package.json scripts:**
 
-```typescript
-import { buildSvelte } from "svelte-bun-framework";
-
-await buildSvelte({
-	entrypoints: ["./src/app.ts"],
-	outdir: "./dist",
-});
+```json
+{
+	"scripts": {
+		"dev": "bun run dev.ts",
+		"build": "bun run build.ts"
+	}
+}
 ```
 
 ## Requirements
