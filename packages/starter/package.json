@@ -1,6 +1,4 @@
 {
-	"name": "template",
-	"module": "index.ts",
 	"type": "module",
 	"private": true,
 	"dependencies": {
