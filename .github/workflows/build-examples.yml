@@ -1,0 +1,31 @@
+name: Build Examples
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-examples:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: [basic, advanced, stress-test, tailwind]
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies
+        run: bun install
+      
+      - name: Build example - ${{ matrix.example }}
+        run: bun run build
+        working-directory: examples/${{ matrix.example }}
