@@ -31,6 +31,18 @@ export function create_goto<T extends readonly Route[]>(routes: T) {
 	};
 }
 
+export function create_resolver<T extends readonly Route[]>(routes: T) {
+	return <P extends ExtractPaths<T>>(
+		path: P,
+		...args: HasParams<P> extends true ? ExtractParams<P> extends Record<string, never> ? [params?: never]
+			: [params: ExtractParams<P>]
+			: [params?: never]
+	) => {
+		const params = args[0];
+		return params ? interpolatePath(path, params) : path;
+	};
+}
+
 function interpolatePath(path: string, params: Record<string, string>): string {
 	return path.replace(/:([^/]+)/g, (_, paramName) => {
 		const value = params[paramName];
