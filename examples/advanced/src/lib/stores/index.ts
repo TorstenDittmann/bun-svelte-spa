@@ -1,5 +1,5 @@
 import type { Album, ApiError, Photo, Post, User } from "@lib/api";
-import { derived, readable, writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 
 // Theme store
 export const theme = writable<"light" | "dark">("light");

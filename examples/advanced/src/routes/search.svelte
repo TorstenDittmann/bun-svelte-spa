@@ -6,7 +6,7 @@
 	import SearchBar from "@lib/components/SearchBar.svelte";
 	import UserCard from "@lib/components/UserCard.svelte";
 	import { debouncedSearch, searchQuery } from "@lib/stores";
-	import { goto } from "@router";
+	import { goto, resolve } from "@router";
 	import { onMount } from "svelte";
 	let loading = $state(false);
 	let error = $state<string | null>(null);
@@ -227,18 +227,16 @@
 											user
 											(user.id)
 										}
-											<div
-												onclick={() =>
-													handleViewUser(
-														user.id,
-													)}
+											<a
+												href="/users/{user.id}"
+												class="user-link"
 											>
 												<UserCard
 													{user}
 													compact={true}
 													showActions={false}
 												/>
-											</div>
+											</a>
 										{/each}
 									</div>
 								</section>
@@ -270,12 +268,9 @@
 											post
 											(post.id)
 										}
-											<div
+											<a
+												href="/posts/{post.id}"
 												class="post-result"
-												onclick={() =>
-													handleViewPost(
-														post.id,
-													)}
 											>
 												<h3 class="post-title">
 													{@html 									highlightText(
@@ -304,7 +299,7 @@
 																.userId
 														}</span>
 												</div>
-											</div>
+											</a>
 										{/each}
 									</div>
 								</section>
@@ -336,12 +331,9 @@
 											album
 											(album.id)
 										}
-											<div
+											<a
+												href="/albums/{album.id}"
 												class="album-result"
-												onclick={() =>
-													handleViewAlbum(
-														album.id,
-													)}
 											>
 												<div class="album-icon">📁</div>
 												<h3 class="album-title">
@@ -363,7 +355,7 @@
 																.userId
 														}</span>
 												</div>
-											</div>
+											</a>
 										{/each}
 									</div>
 								</section>
@@ -375,13 +367,16 @@
 						<div class="users-results">
 							<div class="users-grid">
 								{#each filteredUsers as user (user.id)}
-									<div onclick={() => handleViewUser(user.id)}>
+									<a
+										href="/users/{user.id}"
+										class="user-link"
+									>
 										<UserCard
 											{user}
 											compact={false}
 											showActions={false}
 										/>
-									</div>
+									</a>
 								{/each}
 							</div>
 						</div>
@@ -391,9 +386,9 @@
 						<div class="posts-results">
 							<div class="posts-list">
 								{#each filteredPosts as post (post.id)}
-									<div
+									<a
+										href="/posts/{post.id}"
 										class="post-result"
-										onclick={() => handleViewPost(post.id)}
 									>
 										<h3 class="post-title">
 											{@html 								highlightText(
@@ -416,7 +411,7 @@
 														.userId
 												}</span>
 										</div>
-									</div>
+									</a>
 								{/each}
 							</div>
 						</div>
@@ -426,9 +421,9 @@
 						<div class="albums-results">
 							<div class="albums-grid">
 								{#each filteredAlbums as album (album.id)}
-									<div
+									<a
+										href="/albums/{album.id}"
 										class="album-result"
-										onclick={() => handleViewAlbum(album.id)}
 									>
 										<div class="album-icon">📁</div>
 										<h3 class="album-title">
@@ -446,7 +441,7 @@
 														.userId
 												}</span>
 										</div>
-									</div>
+									</a>
 								{/each}
 							</div>
 						</div>
@@ -475,24 +470,24 @@
 				<div class="quick-actions">
 					<h3>Quick Access:</h3>
 					<div class="quick-buttons">
-						<button
+						<a
+							href={resolve("/users")}
 							class="quick-btn"
-							onclick={() => goto("/users")}
 						>
 							👥 Browse Users
-						</button>
-						<button
+						</a>
+						<a
+							href={resolve("/posts")}
 							class="quick-btn"
-							onclick={() => goto("/posts")}
 						>
 							📝 Browse Posts
-						</button>
-						<button
+						</a>
+						<a
+							href={resolve("/albums")}
 							class="quick-btn"
-							onclick={() => goto("/albums")}
 						>
 							📁 Browse Albums
-						</button>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -501,401 +496,450 @@
 </div>
 
 <style>
-.search-page {
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: var(--spacing-md);
-}
+	.search-page {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: var(--spacing-md);
+	}
 
-.page-header {
-	text-align: center;
-	margin-bottom: var(--spacing-2xl);
-}
+	.page-header {
+		text-align: center;
+		margin-bottom: var(--spacing-2xl);
+	}
 
-.header-content h1 {
-	font-size: var(--font-size-3xl);
-	font-weight: 700;
-	margin-bottom: var(--spacing-sm);
-	color: var(--color-text-primary);
-}
+	.header-content h1 {
+		font-size: var(--font-size-3xl);
+		font-weight: 700;
+		margin-bottom: var(--spacing-sm);
+		color: var(--color-text-primary);
+	}
 
-.header-content p {
-	font-size: var(--font-size-lg);
-	color: var(--color-text-secondary);
-	margin: 0;
-}
+	.header-content p {
+		font-size: var(--font-size-lg);
+		color: var(--color-text-secondary);
+		margin: 0;
+	}
 
-/* Search Section */
-.search-section {
-	margin-bottom: var(--spacing-2xl);
-}
+	/* Search Section */
+	.search-section {
+		margin-bottom: var(--spacing-2xl);
+	}
 
-.search-container {
-	max-width: 600px;
-	margin: 0 auto;
-	margin-bottom: var(--spacing-lg);
-}
+	.search-container {
+		max-width: 600px;
+		margin: 0 auto;
+		margin-bottom: var(--spacing-lg);
+	}
 
-.search-info {
-	text-align: center;
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-xs);
-}
+	.search-info {
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-xs);
+	}
 
-.search-query {
-	font-size: var(--font-size-lg);
-	font-weight: 600;
-	color: var(--color-text-primary);
-}
+	.search-query {
+		font-size: var(--font-size-lg);
+		font-weight: 600;
+		color: var(--color-text-primary);
+	}
 
-.search-count {
-	font-size: var(--font-size-sm);
-	color: var(--color-text-muted);
-}
+	.search-count {
+		font-size: var(--font-size-sm);
+		color: var(--color-text-muted);
+	}
 
-.loading-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 400px;
-}
+	.loading-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 400px;
+	}
 
-/* Search Results */
-.search-results {
-	background: var(--color-bg-primary);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-lg);
-	overflow: hidden;
-}
+	/* Search Results */
+	.search-results {
+		background: var(--color-bg-primary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+	}
 
-.search-tabs {
-	display: flex;
-	border-bottom: 1px solid var(--color-border);
-	background: var(--color-bg-secondary);
-}
-
-.search-tab {
-	flex: 1;
-	background: none;
-	border: none;
-	padding: var(--spacing-md) var(--spacing-lg);
-	color: var(--color-text-secondary);
-	font-weight: 500;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	border-bottom: 2px solid transparent;
-}
-
-.search-tab:hover {
-	color: var(--color-text-primary);
-	background: var(--color-bg-primary);
-}
-
-.search-tab.active {
-	color: var(--color-primary);
-	background: var(--color-bg-primary);
-	border-bottom-color: var(--color-primary);
-}
-
-.results-content {
-	padding: var(--spacing-lg);
-}
-
-/* Results Sections */
-.results-section {
-	margin-bottom: var(--spacing-2xl);
-}
-
-.results-section:last-child {
-	margin-bottom: 0;
-}
-
-.section-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: var(--spacing-lg);
-}
-
-.section-header h2 {
-	font-size: var(--font-size-xl);
-	font-weight: 600;
-	color: var(--color-text-primary);
-	margin: 0;
-}
-
-.view-all-btn {
-	background: none;
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-md);
-	padding: var(--spacing-xs) var(--spacing-sm);
-	color: var(--color-primary);
-	font-size: var(--font-size-sm);
-	cursor: pointer;
-	transition: all 0.2s ease;
-}
-
-.view-all-btn:hover {
-	background: var(--color-bg-secondary);
-	border-color: var(--color-border-hover);
-}
-
-/* Users Grid */
-.users-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	gap: var(--spacing-lg);
-}
-
-/* Posts List */
-.posts-list {
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-md);
-}
-
-.post-result {
-	background: var(--color-bg-secondary);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-md);
-	padding: var(--spacing-md);
-	cursor: pointer;
-	transition: all 0.2s ease;
-}
-
-.post-result:hover {
-	background: var(--color-bg-primary);
-	border-color: var(--color-border-hover);
-	transform: translateY(-1px);
-	box-shadow: var(--shadow-sm);
-}
-
-.post-title {
-	font-size: var(--font-size-base);
-	font-weight: 600;
-	color: var(--color-text-primary);
-	margin-bottom: var(--spacing-sm);
-	line-height: 1.3;
-}
-
-.post-body {
-	font-size: var(--font-size-sm);
-	color: var(--color-text-secondary);
-	line-height: 1.5;
-	margin-bottom: var(--spacing-sm);
-}
-
-.post-meta {
-	display: flex;
-	gap: var(--spacing-sm);
-	font-size: var(--font-size-xs);
-	color: var(--color-text-muted);
-}
-
-/* Albums Grid */
-.albums-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	gap: var(--spacing-lg);
-}
-
-.album-result {
-	background: var(--color-bg-secondary);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-md);
-	padding: var(--spacing-lg);
-	text-align: center;
-	cursor: pointer;
-	transition: all 0.2s ease;
-}
-
-.album-result:hover {
-	background: var(--color-bg-primary);
-	border-color: var(--color-border-hover);
-	transform: translateY(-2px);
-	box-shadow: var(--shadow-md);
-}
-
-.album-icon {
-	font-size: 2.5rem;
-	margin-bottom: var(--spacing-md);
-}
-
-.album-title {
-	font-size: var(--font-size-base);
-	font-weight: 600;
-	color: var(--color-text-primary);
-	margin-bottom: var(--spacing-sm);
-	line-height: 1.3;
-}
-
-.album-meta {
-	display: flex;
-	justify-content: center;
-	gap: var(--spacing-sm);
-	font-size: var(--font-size-xs);
-	color: var(--color-text-muted);
-}
-
-/* Search Highlighting */
-:global(mark) {
-	background: rgba(255, 235, 59, 0.3);
-	color: inherit;
-	padding: 0 2px;
-	border-radius: 2px;
-}
-
-/* No Results */
-.no-results {
-	text-align: center;
-	padding: var(--spacing-2xl);
-}
-
-.no-results-icon {
-	font-size: 4rem;
-	margin-bottom: var(--spacing-lg);
-}
-
-.no-results h3 {
-	font-size: var(--font-size-xl);
-	font-weight: 600;
-	color: var(--color-text-primary);
-	margin-bottom: var(--spacing-sm);
-}
-
-.no-results p {
-	color: var(--color-text-secondary);
-	margin: 0;
-}
-
-/* Search Suggestions */
-.search-suggestions {
-	background: var(--color-bg-secondary);
-	border-radius: var(--radius-lg);
-	padding: var(--spacing-2xl);
-	text-align: center;
-}
-
-.suggestions-content {
-	max-width: 600px;
-	margin: 0 auto;
-}
-
-.suggestion-icon {
-	font-size: 4rem;
-	margin-bottom: var(--spacing-lg);
-}
-
-.suggestions-content h2 {
-	font-size: var(--font-size-2xl);
-	font-weight: 600;
-	color: var(--color-text-primary);
-	margin-bottom: var(--spacing-sm);
-}
-
-.suggestions-content > p {
-	font-size: var(--font-size-lg);
-	color: var(--color-text-secondary);
-	margin-bottom: var(--spacing-2xl);
-}
-
-.search-tips,
-.quick-actions {
-	text-align: left;
-	margin-bottom: var(--spacing-xl);
-}
-
-.search-tips h3,
-.quick-actions h3 {
-	font-size: var(--font-size-lg);
-	font-weight: 600;
-	color: var(--color-text-primary);
-	margin-bottom: var(--spacing-md);
-}
-
-.search-tips ul {
-	list-style: none;
-	padding: 0;
-}
-
-.search-tips li {
-	padding: var(--spacing-xs) 0;
-	color: var(--color-text-secondary);
-	position: relative;
-	padding-left: var(--spacing-lg);
-}
-
-.search-tips li::before {
-	content: "•";
-	color: var(--color-primary);
-	position: absolute;
-	left: 0;
-}
-
-.quick-buttons {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-	gap: var(--spacing-md);
-}
-
-.quick-btn {
-	padding: var(--spacing-md);
-	background: var(--color-bg-primary);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-md);
-	color: var(--color-text-secondary);
-	cursor: pointer;
-	transition: all 0.2s ease;
-	text-align: center;
-}
-
-.quick-btn:hover {
-	background: var(--color-primary);
-	border-color: var(--color-primary);
-	color: white;
-	transform: translateY(-2px);
-	box-shadow: var(--shadow-md);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
 	.search-tabs {
-		flex-wrap: wrap;
+		display: flex;
+		border-bottom: 1px solid var(--color-border);
+		background: var(--color-bg-secondary);
 	}
 
 	.search-tab {
 		flex: 1;
-		min-width: 120px;
+		background: none;
+		border: none;
+		padding: var(--spacing-md) var(--spacing-lg);
+		color: var(--color-text-secondary);
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		border-bottom: 2px solid transparent;
+	}
+
+	.search-tab:hover {
+		color: var(--color-text-primary);
+		background: var(--color-bg-primary);
+	}
+
+	.search-tab.active {
+		color: var(--color-primary);
+		background: var(--color-bg-primary);
+		border-bottom-color: var(--color-primary);
+	}
+
+	.results-content {
+		padding: var(--spacing-lg);
+	}
+
+	/* Results Sections */
+	.results-section {
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	.results-section:last-child {
+		margin-bottom: 0;
 	}
 
 	.section-header {
-		flex-direction: column;
-		align-items: stretch;
-		gap: var(--spacing-sm);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: var(--spacing-lg);
 	}
 
-	.users-grid,
+	.section-header h2 {
+		font-size: var(--font-size-xl);
+		font-weight: 600;
+		color: var(--color-text-primary);
+		margin: 0;
+	}
+
+	.view-all-btn {
+		background: none;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: var(--spacing-xs) var(--spacing-sm);
+		color: var(--color-primary);
+		font-size: var(--font-size-sm);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.view-all-btn:hover {
+		background: var(--color-bg-secondary);
+		border-color: var(--color-border-hover);
+	}
+
+	/* Users Grid */
+	.users-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: var(--spacing-lg);
+	}
+
+	/* Posts List */
+	.posts-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+	}
+
+	.post-result {
+		background: var(--color-bg-secondary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: var(--spacing-md);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.post-result:hover {
+		background: var(--color-bg-primary);
+		border-color: var(--color-border-hover);
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.post-title {
+		font-size: var(--font-size-base);
+		font-weight: 600;
+		color: var(--color-text-primary);
+		margin-bottom: var(--spacing-sm);
+		line-height: 1.3;
+	}
+
+	.post-body {
+		font-size: var(--font-size-sm);
+		color: var(--color-text-secondary);
+		line-height: 1.5;
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.post-meta {
+		display: flex;
+		gap: var(--spacing-sm);
+		font-size: var(--font-size-xs);
+		color: var(--color-text-muted);
+	}
+
+	/* Albums Grid */
 	.albums-grid {
-		grid-template-columns: 1fr;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: var(--spacing-lg);
+	}
+
+	.album-result {
+		background: var(--color-bg-secondary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: var(--spacing-lg);
+		text-align: center;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.album-result:hover {
+		background: var(--color-bg-primary);
+		border-color: var(--color-border-hover);
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
+	}
+
+	.album-icon {
+		font-size: 2.5rem;
+		margin-bottom: var(--spacing-md);
+	}
+
+	.album-title {
+		font-size: var(--font-size-base);
+		font-weight: 600;
+		color: var(--color-text-primary);
+		margin-bottom: var(--spacing-sm);
+		line-height: 1.3;
+	}
+
+	.album-meta {
+		display: flex;
+		justify-content: center;
+		gap: var(--spacing-sm);
+		font-size: var(--font-size-xs);
+		color: var(--color-text-muted);
+	}
+
+	/* Search Highlighting */
+	:global(mark) {
+		background: rgba(255, 235, 59, 0.3);
+		color: inherit;
+		padding: 0 2px;
+		border-radius: 2px;
+	}
+
+	/* No Results */
+	.no-results {
+		text-align: center;
+		padding: var(--spacing-2xl);
+	}
+
+	.no-results-icon {
+		font-size: 4rem;
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.no-results h3 {
+		font-size: var(--font-size-xl);
+		font-weight: 600;
+		color: var(--color-text-primary);
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.no-results p {
+		color: var(--color-text-secondary);
+		margin: 0;
+	}
+
+	/* Search Suggestions */
+	.search-suggestions {
+		background: var(--color-bg-secondary);
+		border-radius: var(--radius-lg);
+		padding: var(--spacing-2xl);
+		text-align: center;
+	}
+
+	.suggestions-content {
+		max-width: 600px;
+		margin: 0 auto;
+	}
+
+	.suggestion-icon {
+		font-size: 4rem;
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.suggestions-content h2 {
+		font-size: var(--font-size-2xl);
+		font-weight: 600;
+		color: var(--color-text-primary);
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.suggestions-content > p {
+		font-size: var(--font-size-lg);
+		color: var(--color-text-secondary);
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	.search-tips,
+	.quick-actions {
+		text-align: left;
+		margin-bottom: var(--spacing-xl);
+	}
+
+	.search-tips h3,
+	.quick-actions h3 {
+		font-size: var(--font-size-lg);
+		font-weight: 600;
+		color: var(--color-text-primary);
+		margin-bottom: var(--spacing-md);
+	}
+
+	.search-tips ul {
+		list-style: none;
+		padding: 0;
+	}
+
+	.search-tips li {
+		padding: var(--spacing-xs) 0;
+		color: var(--color-text-secondary);
+		position: relative;
+		padding-left: var(--spacing-lg);
+	}
+
+	.search-tips li::before {
+		content: "•";
+		color: var(--color-primary);
+		position: absolute;
+		left: 0;
 	}
 
 	.quick-buttons {
-		grid-template-columns: 1fr;
-	}
-}
-
-@media (max-width: 480px) {
-	.search-page {
-		padding: var(--spacing-sm);
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		gap: var(--spacing-md);
 	}
 
-	.header-content h1 {
-		font-size: var(--font-size-2xl);
+	.quick-btn {
+		padding: var(--spacing-md);
+		background: var(--color-bg-primary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		transition: all 0.2s ease;
+		text-align: center;
+		text-decoration: none;
+		display: block;
 	}
 
-	.search-info {
-		align-items: center;
+	.quick-btn:hover {
+		background: var(--color-primary);
+		border-color: var(--color-primary);
+		color: white;
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
+		text-decoration: none;
 	}
-}
+
+	/* Responsive Design */
+	@media (max-width: 768px) {
+		.search-tabs {
+			flex-wrap: wrap;
+		}
+
+		.search-tab {
+			flex: 1;
+			min-width: 120px;
+		}
+
+		.section-header {
+			flex-direction: column;
+			align-items: stretch;
+			gap: var(--spacing-sm);
+		}
+
+		.users-grid,
+		.albums-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.quick-buttons {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.search-page {
+			padding: var(--spacing-sm);
+		}
+
+		.header-content h1 {
+			font-size: var(--font-size-2xl);
+		}
+
+		.search-info {
+			align-items: center;
+		}
+	}
+
+	/* Anchor link styles for search results */
+	.user-link,
+	.post-result,
+	.album-result {
+		display: block;
+		text-decoration: none;
+		color: inherit;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.user-link:hover,
+	.post-result:hover,
+	.album-result:hover {
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.post-result {
+		background: var(--color-bg-secondary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: var(--spacing-md);
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.post-result:hover {
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-sm);
+		border-color: var(--color-border-hover);
+	}
+
+	.album-result {
+		background: var(--color-bg-secondary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: var(--spacing-lg);
+		text-align: center;
+	}
+
+	.album-result:hover {
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-sm);
+		border-color: var(--color-border-hover);
+	}
 </style>
