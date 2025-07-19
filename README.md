@@ -1,4 +1,4 @@
-# Svelte Bun SPA
+# Svelte Bun SPA _experimental_
 
 A monorepo containing a lightweight Svelte SPA framework built for Bun runtime.
 
