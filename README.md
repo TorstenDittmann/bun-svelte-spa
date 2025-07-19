@@ -47,14 +47,15 @@ Core framework providing:
 - Type-safe runtime router with reactive route store
 - Parameter extraction and programmatic navigation
 
-### `template` (Starter)
+### `starter` (Starter Template)
 
 A starter template with:
 
-- Svelte 5 setup
-- TypeScript configuration
-- Routing example
-- Build and dev scripts
+- Svelte 5 setup with TypeScript
+- Client-side routing with type safety
+- Development server with hot reload
+- Production build configuration
+- Path aliases for clean imports
 
 ## Development
 
@@ -80,7 +81,8 @@ await build({
 });
 
 // Development server
-dev(entrypoint);
+import entrypoint from "./src/index.html";
+dev({ entrypoint });
 ```
 
 ## Routing
@@ -90,21 +92,29 @@ The framework includes a powerful type-safe router with reactive state managemen
 ### Basic Setup
 
 ```typescript
-import { create_goto, create_routes, Router } from "bun-svelte-spa/runtime";
+import About from "@routes/about.svelte";
+import Index from "@routes/index.svelte";
+import User from "@routes/User.svelte";
+import {
+	create_goto,
+	create_resolver,
+	create_routes,
+} from "bun-svelte-spa/runtime";
 
-const routes = create_routes([
-	{ path: "/", component: Home },
+export const routes = create_routes([
+	{ path: "/", component: Index },
 	{ path: "/about", component: About },
-	{ path: "/users/:id", component: UserDetail },
+	{ path: "/users/:id", component: User },
 ]);
 
-const goto = create_goto(routes);
+export const goto = create_goto(routes);
+export const resolve = create_resolver(routes);
 ```
 
 ### Router Component
 
 ```svelte
-<script>
+<script lang="ts">
 	import { routes } from "@router";
 	import { Router } from "bun-svelte-spa/runtime";
 </script>
@@ -115,11 +125,25 @@ const goto = create_goto(routes);
 ### Navigation
 
 ```typescript
+import { goto } from "@router";
+
 // Type-safe navigation
 goto("/about");
 
 // Navigation with parameters
 goto("/users/:id", { id: "123" });
+```
+
+Or use it in Svelte components:
+
+```svelte
+<script>
+	import { goto } from "@router";
+</script>
+
+<button onclick={() => goto("/about")}>
+	Go to About
+</button>
 ```
 
 ### Route Store
@@ -156,12 +180,26 @@ Extract parameters from the current route:
 Generate URLs programmatically:
 
 ```typescript
-import { create_resolver } from "bun-svelte-spa/runtime";
-
-const resolve = create_resolver(routes);
+import { resolve } from "@router";
 
 // Resolve URLs with parameters
 const userUrl = resolve("/users/:id", { id: "123" }); // "/users/123"
+```
+
+## Path Aliases
+
+The starter template includes convenient path aliases in `tsconfig.json`:
+
+```json
+{
+	"compilerOptions": {
+		"paths": {
+			"@lib/*": ["./src/lib/*"],
+			"@routes/*": ["./src/routes/*"],
+			"@router": ["./src/router.ts"]
+		}
+	}
+}
 ```
 
 ## Requirements

@@ -62,18 +62,23 @@ src/
 Edit `src/router.ts` to add new routes:
 
 ```typescript
-import { create_goto, create_routes } from "bun-svelte-spa/runtime";
-import About from "./routes/about.svelte";
-import Home from "./routes/index.svelte";
-import NewPage from "./routes/new-page.svelte";
+import About from "@routes/about.svelte";
+import Index from "@routes/index.svelte";
+import NewPage from "@routes/new-page.svelte";
+import {
+	create_goto,
+	create_resolver,
+	create_routes,
+} from "bun-svelte-spa/runtime";
 
 export const routes = create_routes([
-	{ path: "/", component: Home },
+	{ path: "/", component: Index },
 	{ path: "/about", component: About },
 	{ path: "/new-page", component: NewPage },
 ]);
 
 export const goto = create_goto(routes);
+export const resolve = create_resolver(routes);
 ```
 
 ## Navigation
@@ -81,7 +86,7 @@ export const goto = create_goto(routes);
 Use the type-safe `goto` function for navigation:
 
 ```typescript
-import { goto } from "./router.ts";
+import { goto } from "@router";
 
 // Navigate to a route
 goto("/about");
@@ -91,12 +96,38 @@ Or use it in Svelte components:
 
 ```svelte
 <script>
-	import { goto } from "../router.ts";
+	import { goto } from "@router";
 </script>
 
 <button onclick={() => goto("/about")}>
 	Go to About
 </button>
+```
+
+## Path Aliases
+
+The template includes convenient path aliases in `tsconfig.json`:
+
+```json
+{
+	"compilerOptions": {
+		"paths": {
+			"@lib/*": ["./src/lib/*"],
+			"@routes/*": ["./src/routes/*"],
+			"@router": ["./src/router.ts"]
+		}
+	}
+}
+```
+
+These allow for cleaner imports:
+
+```typescript
+// Instead of relative paths
+import About from "../../routes/about.svelte";
+
+// Use aliases
+import About from "@routes/about.svelte";
 ```
 
 ## Configuration
@@ -108,6 +139,7 @@ TypeScript configuration is in `tsconfig.json`. The setup includes:
 - Svelte type definitions
 - Module resolution for `.svelte` files
 - Strict type checking
+- Path aliases for clean imports
 
 ### Bun
 
