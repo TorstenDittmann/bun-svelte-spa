@@ -76,7 +76,6 @@ import { build, dev } from "bun-svelte-spa";
 
 // Build for production
 await build({
-	entrypoints: ["./src/index.html"],
 	outdir: "./dist",
 });
 
@@ -107,7 +106,7 @@ const goto = create_goto(routes);
 ```svelte
 <script>
 	import { Router } from "bun-svelte-spa/runtime";
-	import { routes } from "./router.js";
+	import { routes } from "@router";
 </script>
 
 <Router {routes} />
