@@ -105,8 +105,8 @@ const goto = create_goto(routes);
 
 ```svelte
 <script>
-	import { Router } from "bun-svelte-spa/runtime";
 	import { routes } from "@router";
+	import { Router } from "bun-svelte-spa/runtime";
 </script>
 
 <Router {routes} />
@@ -144,7 +144,7 @@ Extract parameters from the current route:
 ```svelte
 <script>
 	import { route } from "bun-svelte-spa/runtime";
-	
+
 	// Reactively get route parameters
 	let userId = $derived($route.params.id);
 	let isUserRoute = $derived($route.route?.path === "/users/:id");
