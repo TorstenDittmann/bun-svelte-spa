@@ -16,11 +16,11 @@
 	"devDependencies": {
 		"@types/bun": "latest",
 		"dprint": "^0.50.1",
-		"oxlint": "^1.6.0",
-		"typescript": "^5"
+		"oxlint": "^1.7.0",
+		"typescript": "^5.8.3"
 	},
 	"peerDependencies": {
-		"svelte": "^5.0.0"
+		"svelte": "^5.35.6"
 	},
 	"keywords": [
 		"svelte",

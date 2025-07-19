@@ -79,44 +79,44 @@
 {/if}
 
 <style>
-.error-container {
-	display: flex;
-	align-items: flex-start;
-	gap: var(--spacing-md);
-	padding: var(--spacing-lg);
-	background: rgba(239, 68, 68, 0.05);
-	border: 1px solid rgba(239, 68, 68, 0.2);
-	border-radius: var(--radius-lg);
-	margin: var(--spacing-md) 0;
-}
+	.error-container {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--spacing-md);
+		padding: var(--spacing-lg);
+		background: rgba(239, 68, 68, 0.05);
+		border: 1px solid rgba(239, 68, 68, 0.2);
+		border-radius: var(--radius-lg);
+		margin: var(--spacing-md) 0;
+	}
 
-.error-icon {
-	color: var(--color-error);
-	flex-shrink: 0;
-	margin-top: var(--spacing-xs);
-}
+	.error-icon {
+		color: var(--color-error);
+		flex-shrink: 0;
+		margin-top: var(--spacing-xs);
+	}
 
-.error-content {
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-sm);
-	flex: 1;
-}
+	.error-content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
+		flex: 1;
+	}
 
-.error-title {
-	margin: 0;
-	font-size: var(--font-size-lg);
-	font-weight: 600;
-	color: var(--color-error);
-}
+	.error-title {
+		margin: 0;
+		font-size: var(--font-size-lg);
+		font-weight: 600;
+		color: var(--color-error);
+	}
 
-.error-message {
-	margin: 0;
-	color: var(--color-text-secondary);
-	line-height: 1.5;
-}
+	.error-message {
+		margin: 0;
+		color: var(--color-text-secondary);
+		line-height: 1.5;
+	}
 
-.error-status {
-	align-self: flex-start;
-}
+	.error-status {
+		align-self: flex-start;
+	}
 </style>

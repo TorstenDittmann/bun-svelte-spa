@@ -7,7 +7,8 @@
 	"toml": {},
 	"malva": {},
 	"markup": {
-		"scriptIndent": true
+		"scriptIndent": true,
+		"styleIndent": true
 	},
 	"yaml": {},
 	"excludes": ["**/node_modules"],
