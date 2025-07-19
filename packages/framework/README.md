@@ -55,9 +55,9 @@ Type-safe client-side routing for SPAs.
 ### Basic Setup
 
 ```typescript
+import About from "@routes/about.svelte";
+import Home from "@routes/home.svelte";
 import { create_goto, create_routes, Router } from "bun-svelte-spa/runtime";
-import About from "./routes/about.svelte";
-import Home from "./routes/home.svelte";
 
 // Define routes
 const routes = create_routes([

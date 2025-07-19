@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { routes } from "@router";
 	import { Router } from "bun-svelte-spa/runtime";
-	import { routes } from "./router";
 </script>
 
 <header>
