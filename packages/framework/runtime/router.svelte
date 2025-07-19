@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from "svelte";
+	import { route } from "./router.js";
 
 	/**
 	 * Component props
@@ -8,22 +9,15 @@
 	let { routes = [], fallback = null } = $props();
 
 	/**
-	 * Current active route
-	 * @type {import('./router').Route | null}
+	 * Current route state
+	 * @type {import('./router').RouteState}
 	 */
-	let currentRoute = $state(null);
+	let route_state = $state({ route: null, params: {}, path: "" });
 
-	/**
-	 * Current route parameters
-	 * @type {Object}
-	 */
-	let params = $state({});
-
-	/**
-	 * Current path
-	 * @type {string}
-	 */
-	let currentPath = $state("");
+	// Subscribe to route store
+	$effect(() => {
+		route_state = $route;
+	});
 
 	/**
 	 * Matches a route path pattern against the current path
@@ -31,24 +25,24 @@
 	 * @param {string} path - Current path (e.g., '/users/123')
 	 * @returns {{match: boolean, params: Object}} Match result and extracted parameters
 	 */
-	function matchRoute(pattern, path) {
-		const patternParts = pattern.split("/").filter(Boolean);
-		const pathParts = path.split("/").filter(Boolean);
+	function match_route(pattern, path) {
+		const pattern_parts = pattern.split("/").filter(Boolean);
+		const path_parts = path.split("/").filter(Boolean);
 
-		if (patternParts.length !== pathParts.length) {
+		if (pattern_parts.length !== path_parts.length) {
 			return { match: false, params: {} };
 		}
 
 		const params = {};
 
-		for (let i = 0; i < patternParts.length; i++) {
-			const patternPart = patternParts[i];
-			const pathPart = pathParts[i];
+		for (let i = 0; i < pattern_parts.length; i++) {
+			const pattern_part = pattern_parts[i];
+			const path_part = path_parts[i];
 
-			if (patternPart.startsWith(":")) {
+			if (pattern_part.startsWith(":")) {
 				// Dynamic parameter
-				params[patternPart.slice(1)] = pathPart;
-			} else if (patternPart !== pathPart) {
+				params[pattern_part.slice(1)] = path_part;
+			} else if (pattern_part !== path_part) {
 				// Static part doesn't match
 				return { match: false, params: {} };
 			}
@@ -60,26 +54,32 @@
 	/**
 	 * Updates the current route based on the current path
 	 */
-	function updateRoute() {
-		currentPath = window.location.pathname;
+	function update_route() {
+		const pathname = window.location.pathname;
 
 		// Find matching route
-		for (const route of routes) {
-			const { match, params: routeParams } = matchRoute(
-				route.path,
-				currentPath,
+		for (const route_item of routes) {
+			const { match, params: route_params } = match_route(
+				route_item.path,
+				pathname,
 			);
 
 			if (match) {
-				currentRoute = route;
-				params = routeParams;
+				route.set({
+					route: route_item,
+					params: route_params,
+					path: pathname,
+				});
 				return;
 			}
 		}
 
 		// No route matched, use fallback
-		currentRoute = null;
-		params = {};
+		route.set({
+			route: null,
+			params: {},
+			path: pathname,
+		});
 	}
 
 	/**
@@ -93,14 +93,14 @@
 		} else {
 			window.history.pushState({}, "", path);
 		}
-		updateRoute();
+		update_route();
 	}
 
 	/**
 	 * Handles click events on links to enable SPA navigation
 	 * @param {Event} event - The click event
 	 */
-	function handleClick(event) {
+	function handle_click(event) {
 		const link = event.target.closest("a");
 
 		if (link && link.href.startsWith(window.location.origin)) {
@@ -112,27 +112,30 @@
 
 	// Initialize router on mount
 	onMount(() => {
-		updateRoute();
-		window.addEventListener("goto", updateRoute);
-		window.addEventListener("popstate", updateRoute);
-		document.addEventListener("click", handleClick);
+		update_route();
+		window.addEventListener("goto", update_route);
+		window.addEventListener("popstate", update_route);
+		document.addEventListener("click", handle_click);
 
 		return () => {
-			window.removeEventListener("goto", updateRoute);
-			window.removeEventListener("popstate", updateRoute);
-			document.removeEventListener("click", handleClick);
+			window.removeEventListener("goto", update_route);
+			window.removeEventListener("popstate", update_route);
+			document.removeEventListener("click", handle_click);
 		};
 	});
 </script>
 
-{#if currentRoute}
-	{@render currentRoute.component({ params, ...(currentRoute.props || {}) })}
+{#if route_state.route}
+	{@render 	route_state.route.component({
+		params: route_state.params,
+		...(route_state.route.props || {}),
+	})}
 {:else if fallback}
-	{@render fallback({ path: currentPath })}
+	{@render fallback({ path: route_state.path })}
 {:else}
 	<div>
 		<h1>404 - Page Not Found</h1>
-		<p>The page "{currentPath}" could not be found.</p>
+		<p>The page "{route_state.path}" could not be found.</p>
 		<a href="/">Go Home</a>
 	</div>
 {/if}

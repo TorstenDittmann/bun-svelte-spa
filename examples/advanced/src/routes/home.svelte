@@ -3,6 +3,7 @@
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
 	import { stats } from "@lib/stores";
 	import { goto } from "@router";
+
 	import { onMount } from "svelte";
 
 	const featuresData = [

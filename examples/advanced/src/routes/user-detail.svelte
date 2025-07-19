@@ -5,9 +5,11 @@
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
 	import { currentUser, userAlbums, userPosts } from "@lib/stores";
 	import { goto } from "@router";
+	import { route } from "bun-svelte-spa/runtime";
 	import { onMount } from "svelte";
-	// Get user ID from URL
-	let userId = $state<number>(0);
+
+	// Get user ID from route params
+	let userId = $state<string>("");
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 	let activeTab = $state<"profile" | "posts" | "albums">("profile");
@@ -15,27 +17,20 @@
 	let posts = $state<Post[]>([]);
 	let albums = $state<Album[]>([]);
 
-	onMount(() => {
-		// Extract user ID from URL
-		const pathSegments = window.location.pathname.split("/");
-		const idIndex = pathSegments.indexOf("users") + 1;
-		const userIdStr = pathSegments[idIndex];
+	$effect(() => {
+		// Extract user ID from route params
+		const newUserId = $route.params.id;
 
-		if (!userIdStr) {
+		if (!newUserId) {
 			error = "Invalid user ID";
 			loading = false;
 			return;
 		}
 
-		userId = parseInt(userIdStr);
-
-		if (isNaN(userId)) {
-			error = "Invalid user ID";
-			loading = false;
-			return;
+		if (newUserId !== userId) {
+			userId = newUserId;
+			loadUserData();
 		}
-
-		loadUserData();
 	});
 
 	async function loadUserData() {
@@ -44,14 +39,14 @@
 			error = null;
 
 			// Load user profile
-			const userData = await api.getUser(userId);
+			const userData = await api.getUser(parseInt(userId));
 			user = userData;
 			currentUser.setData(userData);
 
 			// Load user's posts and albums in parallel
 			const [postsData, albumsData] = await Promise.all([
-				api.getUserPosts(userId),
-				api.getUserAlbums(userId),
+				api.getUserPosts(parseInt(userId)),
+				api.getUserAlbums(parseInt(userId)),
 			]);
 
 			posts = postsData;
@@ -68,11 +63,11 @@
 	}
 
 	function handleViewPosts() {
-		goto("/users/:id/posts", { id: userId.toString() });
+		goto("/users/:id/posts", { id: userId });
 	}
 
 	function handleViewAlbums() {
-		goto("/users/:id/albums", { id: userId.toString() });
+		goto("/users/:id/albums", { id: userId });
 	}
 
 	function handleViewPost(postId: number) {

@@ -90,7 +90,7 @@ src/
    bun run build
    ```
 
-The app will be available at `http://localhost:3000`.
+The app will be available at `http://localhost:1337`.
 
 ## Data Source
 

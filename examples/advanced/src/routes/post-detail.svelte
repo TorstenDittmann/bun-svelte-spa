@@ -3,8 +3,9 @@
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
 	import { goto } from "@router";
+	import { route } from "bun-svelte-spa/runtime";
 
-	let postId = $state(0);
+	let postId = $state("");
 	let post = $state(null);
 	let comments = $state([]);
 	let user = $state(null);
@@ -13,17 +14,18 @@
 	let showComments = $state(true);
 
 	$effect(() => {
-		const pathSegments = window.location.pathname.split("/");
-		const idIndex = pathSegments.indexOf("posts") + 1;
-		postId = parseInt(pathSegments[idIndex]);
+		const newPostId = $route.params.id;
 
-		if (isNaN(postId)) {
+		if (!newPostId) {
 			error = "Invalid post ID";
 			loading = false;
 			return;
 		}
 
-		loadPostData();
+		if (newPostId !== postId) {
+			postId = newPostId;
+			loadPostData();
+		}
 	});
 
 	async function loadPostData() {
@@ -32,8 +34,8 @@
 			error = null;
 
 			const [postData, commentsData] = await Promise.all([
-				api.getPost(postId),
-				api.getPostComments(postId),
+				api.getPost(parseInt(postId)),
+				api.getPostComments(parseInt(postId)),
 			]);
 
 			post = postData;

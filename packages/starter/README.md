@@ -25,7 +25,7 @@ bun run build
 
 ## Development
 
-The development server runs on `http://localhost:3000` with automatic reload when files change.
+The development server runs on `http://localhost:1337` with automatic reload when files change.
 
 ```bash
 bun run dev
