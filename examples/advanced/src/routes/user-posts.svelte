@@ -3,8 +3,9 @@
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
 	import { goto } from "@router";
+	import { route } from "bun-svelte-spa/runtime";
 
-	let userId = $state(0);
+	let userId = $state("");
 	let user = $state(null);
 	let posts = $state([]);
 	let loading = $state(true);
@@ -41,17 +42,18 @@
 	});
 
 	$effect(() => {
-		const pathSegments = window.location.pathname.split("/");
-		const idIndex = pathSegments.indexOf("users") + 1;
-		userId = parseInt(pathSegments[idIndex]);
+		const newUserId = $route.params.id;
 
-		if (isNaN(userId)) {
+		if (!newUserId) {
 			error = "Invalid user ID";
 			loading = false;
 			return;
 		}
 
-		loadUserPosts();
+		if (newUserId !== userId) {
+			userId = newUserId;
+			loadUserPosts();
+		}
 	});
 
 	async function loadUserPosts() {
@@ -60,8 +62,8 @@
 			error = null;
 
 			const [userData, postsData] = await Promise.all([
-				api.getUser(userId),
-				api.getUserPosts(userId),
+				api.getUser(parseInt(userId)),
+				api.getUserPosts(parseInt(userId)),
 			]);
 
 			user = userData;

@@ -1,4 +1,5 @@
 {
+	"name": "bun-svelte-spa-starter",
 	"type": "module",
 	"private": true,
 	"dependencies": {

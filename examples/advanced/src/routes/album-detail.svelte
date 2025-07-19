@@ -3,8 +3,9 @@
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
 	import { goto } from "@router";
+	import { route } from "bun-svelte-spa/runtime";
 
-	let albumId = $state(0);
+	let albumId = $state("");
 	let album = $state(null);
 	let photos = $state([]);
 	let user = $state(null);
@@ -15,17 +16,18 @@
 	let currentPhotoIndex = $state(0);
 
 	$effect(() => {
-		const pathSegments = window.location.pathname.split("/");
-		const idIndex = pathSegments.indexOf("albums") + 1;
-		albumId = parseInt(pathSegments[idIndex]);
+		const newAlbumId = $route.params.id;
 
-		if (isNaN(albumId)) {
+		if (!newAlbumId) {
 			error = "Invalid album ID";
 			loading = false;
 			return;
 		}
 
-		loadAlbumData();
+		if (newAlbumId !== albumId) {
+			albumId = newAlbumId;
+			loadAlbumData();
+		}
 	});
 
 	async function loadAlbumData() {
@@ -34,8 +36,8 @@
 			error = null;
 
 			const [albumData, photosData] = await Promise.all([
-				api.getAlbum(albumId),
-				api.getAlbumPhotos(albumId),
+				api.getAlbum(parseInt(albumId)),
+				api.getAlbumPhotos(parseInt(albumId)),
 			]);
 
 			album = albumData;

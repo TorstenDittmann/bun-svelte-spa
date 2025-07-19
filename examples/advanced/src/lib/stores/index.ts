@@ -61,10 +61,6 @@ export const searchResults = writable<{
 	albums: [],
 });
 
-// Navigation state
-export const currentRoute = writable<string>("/");
-export const routeParams = writable<Record<string, string>>({});
-
 // UI state
 export const sidebarOpen = writable<boolean>(false);
 
