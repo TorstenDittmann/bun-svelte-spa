@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { routes } from "@router";
+	import { router } from "@router";
 	import { Router } from "bun-svelte-spa/runtime";
 </script>
 
@@ -14,5 +14,5 @@
 </header>
 
 <main>
-	<Router {routes} />
+	<Router {router} />
 </main>

@@ -4,8 +4,7 @@
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
 	import { currentUser, userAlbums, userPosts } from "@lib/stores";
-	import { resolve } from "@router";
-	import { route } from "bun-svelte-spa/runtime";
+	import { current, resolve } from "@router";
 
 	// Get user ID from route params
 	let userId = $state<string>("");
@@ -18,7 +17,7 @@
 
 	$effect(() => {
 		// Extract user ID from route params
-		const newUserId = $route.params.id;
+		const newUserId = $current.params.id;
 
 		if (!newUserId) {
 			error = "Invalid user ID";

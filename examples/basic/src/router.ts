@@ -1,9 +1,9 @@
 import About from "@routes/about.svelte";
 import Index from "@routes/index.svelte";
 import User from "@routes/user.svelte";
-import { create_goto, create_resolver, create_routes } from "bun-svelte-spa/runtime";
+import { create_router } from "bun-svelte-spa/runtime";
 
-export const routes = create_routes([
+export const router = create_router([
 	{
 		path: "/",
 		component: Index,
@@ -18,5 +18,4 @@ export const routes = create_routes([
 	},
 ]);
 
-export const goto = create_goto(routes);
-export const resolve = create_resolver(routes);
+export const { routes, goto, resolve, current } = router;

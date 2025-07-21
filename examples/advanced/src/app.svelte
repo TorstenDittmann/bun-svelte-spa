@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { theme, toggleTheme } from "@lib/stores";
-	import { goto, routes } from "@router";
+	import { goto, router } from "@router";
 	import NotFound from "@routes/not-found.svelte";
 	import { Router } from "bun-svelte-spa/runtime";
 </script>
@@ -179,7 +179,7 @@
 	<!-- Main Content -->
 	<main class="main-content">
 		<div class="container">
-			<Router {routes} fallback={NotFound} />
+			<Router {router} fallback={NotFound} />
 		</div>
 	</main>
 </div>

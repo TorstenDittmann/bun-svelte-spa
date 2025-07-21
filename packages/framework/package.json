@@ -34,6 +34,7 @@
 		"@types/bun": "latest"
 	},
 	"dependencies": {
-		"bun-plugin-svelte": "^0.0.6"
+		"bun-plugin-svelte": "^0.0.6",
+		"radix3": "^1.1.2"
 	}
 }
