@@ -1,4 +1,4 @@
-import { build as bun_build, type BuildConfig } from "bun";
+import { type BuildConfig } from "bun";
 import { SveltePlugin } from "bun-plugin-svelte";
 
 export async function build(options: Partial<BuildConfig>) {
@@ -7,11 +7,12 @@ export async function build(options: Partial<BuildConfig>) {
 		? [svelte_plugin, ...options.plugins]
 		: [svelte_plugin];
 
-	const build_output = await bun_build({
+	const build_output = await Bun.build({
 		entrypoints: ["./src/index.html"],
 		outdir: "./dist",
 		minify: true,
 		target: "browser",
+		splitting: true,
 		naming: {
 			entry: "[dir]/[name].[ext]",
 			chunk: "_chunks/[name]-[hash].[ext]",

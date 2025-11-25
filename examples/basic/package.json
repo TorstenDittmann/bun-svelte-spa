@@ -10,11 +10,11 @@
 	},
 	"dependencies": {
 		"launch.css": "^1.1.6",
-		"svelte": "^5.35.6",
+		"svelte": "^5.44.0",
 		"bun-svelte-spa": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
-		"typescript": "^5"
+		"typescript": "^5.9.3"
 	}
 }
