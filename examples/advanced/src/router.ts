@@ -1,62 +1,50 @@
-import AlbumDetail from "@routes/album-detail.svelte";
-import Albums from "@routes/albums.svelte";
-import Dashboard from "@routes/dashboard.svelte";
-import Home from "@routes/home.svelte";
-import PostDetail from "@routes/post-detail.svelte";
-import Posts from "@routes/posts.svelte";
-import Search from "@routes/search.svelte";
-import UserAlbums from "@routes/user-albums.svelte";
-import UserDetail from "@routes/user-detail.svelte";
-import UserPosts from "@routes/user-posts.svelte";
-import Users from "@routes/users.svelte";
-import { create_goto, create_resolver, create_routes } from "bun-svelte-spa/runtime";
+import { create_router } from "bun-svelte-spa/runtime";
 
-export const routes = create_routes([
+export const router = create_router([
 	{
 		path: "/",
-		component: Home,
+		component: () => import("@routes/home.svelte"),
 	},
 	{
 		path: "/dashboard",
-		component: Dashboard,
+		component: () => import("@routes/dashboard.svelte"),
 	},
 	{
 		path: "/users",
-		component: Users,
+		component: () => import("@routes/users.svelte"),
 	},
 	{
 		path: "/users/:id",
-		component: UserDetail,
+		component: () => import("@routes/user-detail.svelte"),
 	},
 	{
 		path: "/users/:id/posts",
-		component: UserPosts,
+		component: () => import("@routes/user-posts.svelte"),
 	},
 	{
 		path: "/users/:id/albums",
-		component: UserAlbums,
+		component: () => import("@routes/user-albums.svelte"),
 	},
 	{
 		path: "/posts",
-		component: Posts,
+		component: () => import("@routes/posts.svelte"),
 	},
 	{
 		path: "/posts/:id",
-		component: PostDetail,
+		component: () => import("@routes/post-detail.svelte"),
 	},
 	{
 		path: "/albums",
-		component: Albums,
+		component: () => import("@routes/albums.svelte"),
 	},
 	{
 		path: "/albums/:id",
-		component: AlbumDetail,
+		component: () => import("@routes/album-detail.svelte"),
 	},
 	{
 		path: "/search",
-		component: Search,
+		component: () => import("@routes/search.svelte"),
 	},
 ]);
 
-export const goto = create_goto(routes);
-export const resolve = create_resolver(routes);
+export const { routes, goto, resolve, current } = router;
