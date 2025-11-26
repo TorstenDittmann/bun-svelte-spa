@@ -11,7 +11,7 @@
         "typescript": "^5.9.3",
       },
       "peerDependencies": {
-        "svelte": "^5.35.6",
+        "svelte": "^5.44.0",
       },
     },
     "examples/advanced": {

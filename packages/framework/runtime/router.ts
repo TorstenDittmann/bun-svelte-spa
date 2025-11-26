@@ -3,7 +3,7 @@ import { type Writable, writable } from "svelte/store";
 
 export type Route = {
 	path: string;
-	component: import("svelte").Component;
+	component: import("svelte").Component | (() => Promise<{ default: import("svelte").Component }>);
 	props?: Record<string, unknown>;
 };
 
@@ -108,9 +108,23 @@ export class RouterInstance<T extends readonly Route[]> {
 		this.updateRoute();
 	}
 
-	updateRoute() {
+	async updateRoute() {
 		const pathname = window.location.pathname;
 		const { route: matched_route, params: route_params } = this.match(pathname);
+
+		if (matched_route && matched_route.component) {
+			const component = matched_route.component as unknown;
+			// Check if it's a dynamic import (function with no args)
+			// Svelte 5 components have 2 args (anchor, props)
+			if (typeof component === "function" && component.length === 0) {
+				try {
+					const module = await component();
+					matched_route.component = module.default;
+				} catch (error) {
+					console.error("Failed to load route component:", error);
+				}
+			}
+		}
 
 		this.current.set({
 			route: matched_route,
