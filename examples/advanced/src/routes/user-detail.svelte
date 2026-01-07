@@ -1,64 +1,25 @@
 <script lang="ts">
-	import { api } from "@lib/api";
-	import type { Album, Post, User } from "@lib/api";
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
-	import { currentUser, userAlbums, userPosts } from "@lib/stores";
+	import {
+		userAlbumsQuery,
+		userPostsQuery,
+		userQuery,
+	} from "@lib/queries.svelte";
 	import { current, resolve } from "@router";
 
-	// Get user ID from route params
-	let userId = $state<string>("");
-	let loading = $state(true);
-	let error = $state<string | null>(null);
 	let activeTab = $state<"profile" | "posts" | "albums">("profile");
-	let user = $state<User | null>(null);
-	let posts = $state<Post[]>([]);
-	let albums = $state<Album[]>([]);
 
-	$effect(() => {
-		// Extract user ID from route params
-		const newUserId = $current.params.id;
+	const userId = $derived(parseInt($current.params.id || "0"));
 
-		if (!newUserId) {
-			error = "Invalid user ID";
-			loading = false;
-			return;
-		}
+	const user = $derived(userQuery(userId));
+	const posts = $derived(userPostsQuery(userId));
+	const albums = $derived(userAlbumsQuery(userId));
 
-		if (newUserId !== userId) {
-			userId = newUserId;
-			loadUserData();
-		}
-	});
-
-	async function loadUserData() {
-		try {
-			loading = true;
-			error = null;
-
-			// Load user profile
-			const userData = await api.getUser(parseInt(userId));
-			user = userData;
-			currentUser.setData(userData);
-
-			// Load user's posts and albums in parallel
-			const [postsData, albumsData] = await Promise.all([
-				api.getUserPosts(parseInt(userId)),
-				api.getUserAlbums(parseInt(userId)),
-			]);
-
-			posts = postsData;
-			albums = albumsData;
-			userPosts.setData(postsData);
-			userAlbums.setData(albumsData);
-		} catch (err) {
-			error = err instanceof Error
-				? err.message
-				: "Failed to load user data";
-		} finally {
-			loading = false;
-		}
-	}
+	const isLoading = $derived(
+		user.isLoading || posts.isLoading || albums.isLoading,
+	);
+	const error = $derived(user.error || posts.error || albums.error);
 
 	function getInitials(name: string): string {
 		return name
@@ -67,6 +28,12 @@
 			.join("")
 			.toUpperCase()
 			.slice(0, 2);
+	}
+
+	function handleRetry() {
+		user.refetch();
+		posts.refetch();
+		albums.refetch();
 	}
 </script>
 
@@ -93,32 +60,32 @@
 		</a>
 	</div>
 
-	{#if loading}
+	{#if isLoading}
 		<div class="loading-container">
 			<LoadingSpinner size="lg" text="Loading user profile..." />
 		</div>
 	{:else if error}
 		<ErrorMessage
-			error={{ message: error }}
+			error={{ message: error.message }}
 			title="Failed to Load User Profile"
-			onRetry={loadUserData}
+			onRetry={handleRetry}
 		/>
-	{:else if user}
+	{:else if user.data}
 		<!-- User Header -->
 		<div class="user-header">
 			<div class="user-avatar-large">
-				{getInitials(user.name)}
+				{getInitials(user.data.name)}
 			</div>
 			<div class="user-info">
-				<h1 class="user-name">{user.name}</h1>
-				<p class="user-username">@{user.username}</p>
-				<p class="user-email">{user.email}</p>
+				<h1 class="user-name">{user.data.name}</h1>
+				<p class="user-username">@{user.data.username}</p>
+				<p class="user-email">{user.data.email}</p>
 				<div class="user-stats">
 					<span class="stat">
-						<strong>{posts.length}</strong> posts
+						<strong>{posts.data?.length ?? 0}</strong> posts
 					</span>
 					<span class="stat">
-						<strong>{albums.length}</strong> albums
+						<strong>{albums.data?.length ?? 0}</strong> albums
 					</span>
 				</div>
 			</div>
@@ -138,14 +105,14 @@
 				class:active={activeTab === "posts"}
 				onclick={() => activeTab = "posts"}
 			>
-				Posts ({posts.length})
+				Posts ({posts.data?.length ?? 0})
 			</button>
 			<button
 				class="tab"
 				class:active={activeTab === "albums"}
 				onclick={() => activeTab = "albums"}
 			>
-				Albums ({albums.length})
+				Albums ({albums.data?.length ?? 0})
 			</button>
 		</div>
 
@@ -160,26 +127,29 @@
 							<div class="info-item">
 								<span class="info-label">Email:</span>
 								<a
-									href="mailto:{user.email}"
+									href="mailto:{user.data.email}"
 									class="info-value email-link"
-								>{user.email}</a>
+								>{user.data.email}</a>
 							</div>
 							<div class="info-item">
 								<span class="info-label">Phone:</span>
 								<a
-									href="tel:{user.phone}"
+									href="tel:{user.data.phone}"
 									class="info-value phone-link"
-								>{user.phone}</a>
+								>{user.data.phone}</a>
 							</div>
 							<div class="info-item">
 								<span class="info-label">Website:</span>
 								<a
-									href="http://{user.website}"
+									href="http://{user.data.website}"
 									target="_blank"
 									rel="noopener noreferrer"
 									class="info-value website-link"
 								>
-									{user.website}
+									{
+										user.data
+											.website
+									}
 								</a>
 							</div>
 						</div>
@@ -190,18 +160,23 @@
 						<h2>Address</h2>
 						<div class="address-info">
 							<p class="address-line">
-								{user.address.street}, {user.address.suite}
+								{user.data.address.street}, {
+									user.data.address.suite
+								}
 							</p>
 							<p class="address-line">
-								{user.address.city}, {user.address.zipcode}
+								{user.data.address.city}, {
+									user.data.address
+										.zipcode
+								}
 							</p>
 							<div class="geo-info">
 								<span>📍 {
-										user.address.geo
-											.lat
+										user.data.address
+											.geo.lat
 									}, {
-										user.address.geo
-											.lng
+										user.data.address
+											.geo.lng
 									}</span>
 							</div>
 						</div>
@@ -211,21 +186,26 @@
 					<div class="info-section">
 						<h2>Company</h2>
 						<div class="company-info">
-							<h3 class="company-name">{user.company.name}</h3>
+							<h3 class="company-name">
+								{user.data.company.name}
+							</h3>
 							<p class="company-catchphrase">
-								"{user.company.catchPhrase}"
+								"{
+									user.data.company
+										.catchPhrase
+								}"
 							</p>
-							<p class="company-bs">{user.company.bs}</p>
+							<p class="company-bs">{user.data.company.bs}</p>
 						</div>
 					</div>
 				</div>
 			{:else if activeTab === "posts"}
 				<div class="posts-content">
 					<div class="section-header">
-						<h2>Posts by {user.name}</h2>
+						<h2>Posts by {user.data.name}</h2>
 						<a
 							href={resolve("/users/:id/posts", {
-								id: userId,
+								id: userId.toString(),
 							})}
 							class="btn btn-primary btn-sm"
 						>
@@ -233,7 +213,7 @@
 						</a>
 					</div>
 
-					{#if posts.length === 0}
+					{#if !posts.data?.length}
 						<div class="empty-state">
 							<div class="empty-icon">📝</div>
 							<h3>No posts yet</h3>
@@ -241,7 +221,7 @@
 						</div>
 					{:else}
 						<div class="posts-grid">
-							{#each posts.slice(0, 6) as post (post.id)}
+							{#each posts.data.slice(0, 6) as post (post.id)}
 								<a
 									href={resolve("/posts/:id", {
 										id: post.id.toString(),
@@ -258,15 +238,15 @@
 								</a>
 							{/each}
 						</div>
-						{#if posts.length > 6}
+						{#if posts.data.length > 6}
 							<div class="show-more">
 								<a
 									href={resolve("/users/:id/posts", {
-										id: userId,
+										id: userId.toString(),
 									})}
 									class="btn btn-secondary"
 								>
-									View All {posts.length} Posts
+									View All {posts.data.length} Posts
 								</a>
 							</div>
 						{/if}
@@ -275,10 +255,10 @@
 			{:else if activeTab === "albums"}
 				<div class="albums-content">
 					<div class="section-header">
-						<h2>Albums by {user.name}</h2>
+						<h2>Albums by {user.data.name}</h2>
 						<a
 							href={resolve("/users/:id/albums", {
-								id: userId,
+								id: userId.toString(),
 							})}
 							class="btn btn-primary btn-sm"
 						>
@@ -286,7 +266,7 @@
 						</a>
 					</div>
 
-					{#if albums.length === 0}
+					{#if !albums.data?.length}
 						<div class="empty-state">
 							<div class="empty-icon">📁</div>
 							<h3>No albums yet</h3>
@@ -294,7 +274,7 @@
 						</div>
 					{:else}
 						<div class="albums-grid">
-							{#each albums.slice(0, 6) as album (album.id)}
+							{#each albums.data.slice(0, 6) as album (album.id)}
 								<a
 									href={resolve("/albums/:id", {
 										id: album.id.toString(),
@@ -311,15 +291,15 @@
 								</a>
 							{/each}
 						</div>
-						{#if albums.length > 6}
+						{#if albums.data.length > 6}
 							<div class="show-more">
 								<a
 									href={resolve("/users/:id/albums", {
-										id: userId,
+										id: userId.toString(),
 									})}
 									class="btn btn-secondary"
 								>
-									View All {albums.length} Albums
+									View All {albums.data.length} Albums
 								</a>
 							</div>
 						{/if}

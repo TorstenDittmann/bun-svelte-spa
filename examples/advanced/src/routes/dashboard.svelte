@@ -1,42 +1,29 @@
 <script lang="ts">
-	import { api } from "@lib/api";
-	import type { Post, User } from "@lib/api";
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
 	import UserCard from "@lib/components/UserCard.svelte";
-	import { albums, posts, stats, users } from "@lib/stores";
+	import {
+		albumsQuery,
+		postsQuery,
+		usersQuery,
+	} from "@lib/queries.svelte";
 	import { resolve } from "@router";
-	import { onMount } from "svelte";
 
-	let recentUsers = $state<User[]>([]);
-	let recentPosts = $state<Post[]>([]);
-	let loading = $state(true);
-	let error = $state<string | null>(null);
+	const users = usersQuery();
+	const posts = postsQuery();
+	const albums = albumsQuery();
 
-	onMount(async () => {
-		try {
-			// Load dashboard data
-			const [usersData, postsData, albumsData] = await Promise
-				.all([
-					api.getUsers(),
-					api.getPosts(),
-					api.getAlbums(),
-				]);
+	const isLoading = $derived(
+		users.isLoading || posts.isLoading || albums.isLoading,
+	);
+	const error = $derived(users.error || posts.error || albums.error);
+	const recentUsers = $derived(users.data?.slice(0, 3) ?? []);
+	const recentPosts = $derived(posts.data?.slice(0, 5) ?? []);
 
-			users.setData(usersData);
-			posts.setData(postsData);
-			albums.setData(albumsData);
-
-			// Get recent data for display
-			recentUsers = usersData.slice(0, 3);
-			recentPosts = postsData.slice(0, 5);
-		} catch (err) {
-			error = err instanceof Error
-				? err.message
-				: "Failed to load dashboard data";
-		} finally {
-			loading = false;
-		}
+	const stats = $derived({
+		totalUsers: users.data?.length ?? 0,
+		totalPosts: posts.data?.length ?? 0,
+		totalAlbums: albums.data?.length ?? 0,
 	});
 </script>
 
@@ -46,15 +33,19 @@
 		<p>Overview of your application data and recent activity</p>
 	</div>
 
-	{#if loading}
+	{#if isLoading}
 		<div class="loading-container">
 			<LoadingSpinner size="lg" text="Loading dashboard data..." />
 		</div>
 	{:else if error}
 		<ErrorMessage
-			error={{ message: error }}
+			error={{ message: error.message }}
 			title="Dashboard Error"
-			onRetry={() => window.location.reload()}
+			onRetry={() => {
+				users.refetch();
+				posts.refetch();
+				albums.refetch();
+			}}
 		/>
 	{:else}
 		<!-- Statistics Cards -->
@@ -63,7 +54,7 @@
 			<div class="stats-grid">
 				<div class="stat-card primary">
 					<div class="stat-content">
-						<div class="stat-number">{$stats.totalUsers}</div>
+						<div class="stat-number">{stats.totalUsers}</div>
 						<div class="stat-label">Total Users</div>
 					</div>
 					<div class="stat-icon">👥</div>
@@ -74,7 +65,7 @@
 
 				<div class="stat-card secondary">
 					<div class="stat-content">
-						<div class="stat-number">{$stats.totalPosts}</div>
+						<div class="stat-number">{stats.totalPosts}</div>
 						<div class="stat-label">Total Posts</div>
 					</div>
 					<div class="stat-icon">📝</div>
@@ -85,7 +76,7 @@
 
 				<div class="stat-card accent">
 					<div class="stat-content">
-						<div class="stat-number">{$stats.totalAlbums}</div>
+						<div class="stat-number">{stats.totalAlbums}</div>
 						<div class="stat-label">Total Albums</div>
 					</div>
 					<div class="stat-icon">📁</div>

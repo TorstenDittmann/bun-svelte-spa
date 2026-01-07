@@ -1,16 +1,14 @@
 <script lang="ts">
-	import { api } from "@lib/api";
 	import type { User } from "@lib/api";
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
 	import SearchBar from "@lib/components/SearchBar.svelte";
 	import UserCard from "@lib/components/UserCard.svelte";
-	import { filteredUsers, searchQuery, users } from "@lib/stores";
+	import { usersQuery } from "@lib/queries.svelte";
 	import { goto } from "@router";
-	import { onMount } from "svelte";
 
-	let loading = $state(true);
-	let error = $state<string | null>(null);
+	const users = usersQuery();
+
 	let viewMode = $state<"grid" | "list">("grid");
 	let sortBy = $state<"name" | "username" | "email" | "company">(
 		"name",
@@ -18,24 +16,22 @@
 	let sortDirection = $state<"asc" | "desc">("asc");
 	let searchTerm = $state("");
 
-	const displayUsers = $derived(
-		sortUsers($filteredUsers, sortBy, sortDirection),
-	);
-
-	onMount(async () => {
-		try {
-			users.setLoading();
-			const usersData = await api.getUsers();
-			users.setData(usersData);
-		} catch (err) {
-			error = err instanceof Error
-				? err.message
-				: "Failed to load users";
-			users.setError({ message: error });
-		} finally {
-			loading = false;
+	const filteredUsers = $derived.by(() => {
+		if (!users.data || !searchTerm.trim()) {
+			return users.data ?? [];
 		}
+		const query = searchTerm.toLowerCase();
+		return users.data.filter(
+			(user) =>
+				user.name.toLowerCase().includes(query)
+				|| user.email.toLowerCase().includes(query)
+				|| user.username.toLowerCase().includes(query),
+		);
 	});
+
+	const displayUsers = $derived(
+		sortUsers(filteredUsers, sortBy, sortDirection),
+	);
 
 	function sortUsers(
 		usersList: User[],
@@ -92,10 +88,6 @@
 	function handleViewUser(userId: number) {
 		goto("/users/:id", { id: userId.toString() });
 	}
-
-	function handleRetry() {
-		window.location.reload();
-	}
 </script>
 
 <div class="users-page">
@@ -113,15 +105,15 @@
 		</div>
 	</div>
 
-	{#if loading}
+	{#if users.isLoading}
 		<div class="loading-container">
 			<LoadingSpinner size="lg" text="Loading users..." />
 		</div>
-	{:else if error}
+	{:else if users.error}
 		<ErrorMessage
-			error={{ message: error }}
+			error={{ message: users.error.message }}
 			title="Failed to Load Users"
-			onRetry={handleRetry}
+			onRetry={() => users.refetch()}
 		/>
 	{:else}
 		<!-- Controls -->
@@ -324,7 +316,7 @@
 				</p>
 				<button
 					class="btn btn-primary"
-					onclick={() => searchQuery.set("")}
+					onclick={() => searchTerm = ""}
 				>
 					Clear Search
 				</button>
