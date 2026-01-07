@@ -127,7 +127,7 @@ export const api = new ApiClient();
 
 // Helper function to simulate loading delay for demo purposes
 export function delay(ms: number): Promise<void> {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // Generic async data loader with error handling

@@ -1,17 +1,17 @@
 {
 	"name": "svelte-bun-basic-example",
 	"version": "0.1.0",
-	"description": "Basic example application using bun-svelte-spa",
 	"private": true,
+	"description": "Basic example application using bun-svelte-spa",
 	"type": "module",
 	"scripts": {
 		"build": "bun run build.ts",
 		"dev": "bun run dev.ts"
 	},
 	"dependencies": {
+		"bun-svelte-spa": "workspace:*",
 		"launch.css": "^1.1.6",
-		"svelte": "^5.44.0",
-		"bun-svelte-spa": "workspace:*"
+		"svelte": "^5.44.0"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",

@@ -66,7 +66,7 @@ bun install
 # Format code
 bun run format
 
-# Lint code  
+# Lint code
 bun run lint
 ```
 

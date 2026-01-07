@@ -2,9 +2,17 @@
 	"name": "bun-svelte-spa",
 	"version": "0.1.3",
 	"description": "A simple Svelte framework for Bun",
+	"keywords": [
+		"build-tool",
+		"bun",
+		"framework",
+		"svelte"
+	],
+	"license": "MIT",
+	"author": "",
+	"type": "module",
 	"main": "index.ts",
 	"module": "index.ts",
-	"type": "module",
 	"exports": {
 		".": {
 			"bun": "./index.ts",
@@ -19,22 +27,14 @@
 		"build": "echo 'No build needed - Bun runs TypeScript directly'",
 		"test": "echo 'No tests yet'"
 	},
-	"keywords": [
-		"svelte",
-		"bun",
-		"framework",
-		"build-tool"
-	],
-	"author": "",
-	"license": "MIT",
-	"peerDependencies": {
-		"svelte": "^5.44.0"
+	"dependencies": {
+		"bun-plugin-svelte": "^0.0.6",
+		"radix3": "^1.1.2"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"
 	},
-	"dependencies": {
-		"bun-plugin-svelte": "^0.0.6",
-		"radix3": "^1.1.2"
+	"peerDependencies": {
+		"svelte": "^5.44.0"
 	}
 }

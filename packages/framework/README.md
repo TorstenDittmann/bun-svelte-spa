@@ -124,13 +124,13 @@ my-app/
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <title>My App</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="./app.ts"></script>
-</body>
+	<head>
+		<title>My App</title>
+	</head>
+	<body>
+		<div id="root"></div>
+		<script type="module" src="./app.ts"></script>
+	</body>
 </html>
 ```
 

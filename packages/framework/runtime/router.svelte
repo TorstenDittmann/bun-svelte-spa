@@ -19,18 +19,25 @@
 		if (link && link.href.startsWith(window.location.origin)) {
 			event.preventDefault();
 			const path = link.pathname;
-			router.navigate(path);
+			router.navigate(path, false, "link");
 		}
+	}
+
+	/**
+	 * Handles browser back/forward navigation
+	 */
+	function handle_popstate() {
+		router.updateRoute("popstate");
 	}
 
 	// Initialize router on mount
 	onMount(() => {
 		router.updateRoute();
-		window.addEventListener("popstate", router.updateRoute);
+		window.addEventListener("popstate", handle_popstate);
 		document.addEventListener("click", handle_click);
 
 		return () => {
-			window.removeEventListener("popstate", router.updateRoute);
+			window.removeEventListener("popstate", handle_popstate);
 			document.removeEventListener("click", handle_click);
 		};
 	});

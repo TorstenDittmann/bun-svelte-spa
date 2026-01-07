@@ -47,4 +47,14 @@ export const router = create_router([
 	},
 ]);
 
-export const { routes, goto, resolve, current } = router;
+export const {
+	routes,
+	goto,
+	resolve,
+	current,
+	beforeNavigate,
+	afterNavigate,
+	queryParams,
+	setQueryParams,
+	isActive,
+} = router;

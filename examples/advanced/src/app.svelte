@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { theme, toggleTheme } from "@lib/stores";
-	import { goto, router } from "@router";
+	import { resolve, router } from "@router";
 	import NotFound from "@routes/not-found.svelte";
 	import { Router } from "bun-svelte-spa/runtime";
 </script>
@@ -11,7 +11,7 @@
 		<nav class="container">
 			<div class="nav-content">
 				<div class="nav-brand">
-					<a href="/" class="brand-link">
+					<a href={resolve("/")} class="brand-link">
 						Svelte+Bun
 					</a>
 				</div>
@@ -19,7 +19,7 @@
 				<ul class="nav-menu">
 					<li>
 						<a
-							href="/"
+							href={resolve("/")}
 							class="nav-link"
 						>
 							Home
@@ -27,7 +27,7 @@
 					</li>
 					<li>
 						<a
-							href="/dashboard"
+							href={resolve("/dashboard")}
 							class="nav-link"
 						>
 							Dashboard
@@ -35,7 +35,7 @@
 					</li>
 					<li>
 						<a
-							href="/users"
+							href={resolve("/users")}
 							class="nav-link"
 						>
 							Users
@@ -43,7 +43,7 @@
 					</li>
 					<li>
 						<a
-							href="/posts"
+							href={resolve("/posts")}
 							class="nav-link"
 						>
 							Posts
@@ -51,7 +51,7 @@
 					</li>
 					<li>
 						<a
-							href="/albums"
+							href={resolve("/albums")}
 							class="nav-link"
 						>
 							Albums
@@ -59,7 +59,7 @@
 					</li>
 					<li>
 						<a
-							href="/search"
+							href={resolve("/search")}
 							class="nav-link"
 						>
 							Search

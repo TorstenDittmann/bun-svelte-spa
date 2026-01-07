@@ -6,7 +6,7 @@ export const theme = writable<"light" | "dark">("light");
 
 // Toggle theme function
 export function toggleTheme() {
-	theme.update(current => current === "light" ? "dark" : "light");
+	theme.update((current) => (current === "light" ? "dark" : "light"));
 }
 
 // Generic loading state interface
@@ -26,7 +26,7 @@ function createAsyncStore<T>(initialData: T | null = null) {
 
 	return {
 		subscribe,
-		setLoading: () => update(state => ({ ...state, loading: true, error: null })),
+		setLoading: () => update((state) => ({ ...state, loading: true, error: null })),
 		setData: (data: T) => set({ data, loading: false, error: null }),
 		setError: (error: ApiError) => set({ data: null, loading: false, error }),
 		reset: () => set({ data: initialData, loading: false, error: null }),
@@ -68,60 +68,61 @@ export const sidebarOpen = writable<boolean>(false);
 export const isLoading = derived(
 	[users, currentUser, posts, currentPost, albums, currentAlbum],
 	([usersState, userState, postsState, postState, albumsState, albumState]) =>
-		usersState.loading || userState.loading || postsState.loading
-		|| postState.loading || albumsState.loading || albumState.loading,
+		usersState.loading
+		|| userState.loading
+		|| postsState.loading
+		|| postState.loading
+		|| albumsState.loading
+		|| albumState.loading,
 );
 
 export const hasError = derived(
 	[users, currentUser, posts, currentPost, albums, currentAlbum],
 	([usersState, userState, postsState, postState, albumsState, albumState]) =>
-		usersState.error || userState.error || postsState.error
-		|| postState.error || albumsState.error || albumState.error,
+		usersState.error
+		|| userState.error
+		|| postsState.error
+		|| postState.error
+		|| albumsState.error
+		|| albumState.error,
 );
 
 // Filtered posts based on search
-export const filteredPosts = derived(
-	[posts, searchQuery],
-	([postsState, query]) => {
-		if (!postsState.data || !query.trim()) {
-			return postsState.data || [];
-		}
+export const filteredPosts = derived([posts, searchQuery], ([postsState, query]) => {
+	if (!postsState.data || !query.trim()) {
+		return postsState.data || [];
+	}
 
-		const lowercaseQuery = query.toLowerCase();
-		return postsState.data.filter(post =>
+	const lowercaseQuery = query.toLowerCase();
+	return postsState.data.filter(
+		(post) =>
 			post.title.toLowerCase().includes(lowercaseQuery)
-			|| post.body.toLowerCase().includes(lowercaseQuery)
-		);
-	},
-);
+			|| post.body.toLowerCase().includes(lowercaseQuery),
+	);
+});
 
 // Filtered users based on search
-export const filteredUsers = derived(
-	[users, searchQuery],
-	([usersState, query]) => {
-		if (!usersState.data || !query.trim()) {
-			return usersState.data || [];
-		}
+export const filteredUsers = derived([users, searchQuery], ([usersState, query]) => {
+	if (!usersState.data || !query.trim()) {
+		return usersState.data || [];
+	}
 
-		const lowercaseQuery = query.toLowerCase();
-		return usersState.data.filter(user =>
+	const lowercaseQuery = query.toLowerCase();
+	return usersState.data.filter(
+		(user) =>
 			user.name.toLowerCase().includes(lowercaseQuery)
 			|| user.email.toLowerCase().includes(lowercaseQuery)
-			|| user.username.toLowerCase().includes(lowercaseQuery)
-		);
-	},
-);
+			|| user.username.toLowerCase().includes(lowercaseQuery),
+	);
+});
 
 // Statistics derived store
-export const stats = derived(
-	[users, posts, albums],
-	([usersState, postsState, albumsState]) => ({
-		totalUsers: usersState.data?.length || 0,
-		totalPosts: postsState.data?.length || 0,
-		totalAlbums: albumsState.data?.length || 0,
-		totalPhotos: 0,
-	}),
-);
+export const stats = derived([users, posts, albums], ([usersState, postsState, albumsState]) => ({
+	totalUsers: usersState.data?.length || 0,
+	totalPosts: postsState.data?.length || 0,
+	totalAlbums: albumsState.data?.length || 0,
+	totalPhotos: 0,
+}));
 
 // Local storage persistence for theme
 if (typeof window !== "undefined") {
@@ -132,7 +133,7 @@ if (typeof window !== "undefined") {
 	}
 
 	// Save theme to localStorage when it changes
-	theme.subscribe(value => {
+	theme.subscribe((value) => {
 		localStorage.setItem("theme", value);
 
 		// Apply theme class to document
