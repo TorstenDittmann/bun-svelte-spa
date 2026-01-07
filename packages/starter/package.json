@@ -2,6 +2,10 @@
 	"name": "bun-svelte-spa-starter",
 	"private": true,
 	"type": "module",
+	"scripts": {
+		"build": "bun run build.ts",
+		"dev": "bun run dev.ts"
+	},
 	"dependencies": {
 		"bun-svelte-spa": "^0",
 		"svelte": "^5.44.0"

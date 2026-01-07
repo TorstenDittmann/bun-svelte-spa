@@ -26,9 +26,9 @@ export type QueryOptions<T, TParams = void> = {
 
 export type MutationOptions<TData, TVariables> = {
 	fn: (variables: TVariables) => Promise<TData>;
-	onSuccess?: (data: TData, variables: TVariables) => void;
-	onError?: (error: Error, variables: TVariables) => void;
-	onSettled?: (data: TData | undefined, error: Error | null, variables: TVariables) => void;
+	onSuccess?: (result: { data: TData; variables: TVariables }) => void;
+	onError?: (result: { error: Error; variables: TVariables }) => void;
+	onSettled?: (result: { data: TData | undefined; error: Error | null; variables: TVariables }) => void;
 };
 
 type CacheEntry<T> = {
@@ -270,9 +270,9 @@ export class Query<T, TParams = void> {
 
 export class Mutation<TData, TVariables = void> {
 	#fn: (variables: TVariables) => Promise<TData>;
-	#onSuccess?: (data: TData, variables: TVariables) => void;
-	#onError?: (error: Error, variables: TVariables) => void;
-	#onSettled?: (data: TData | undefined, error: Error | null, variables: TVariables) => void;
+	#onSuccess?: (result: { data: TData; variables: TVariables }) => void;
+	#onError?: (result: { error: Error; variables: TVariables }) => void;
+	#onSettled?: (result: { data: TData | undefined; error: Error | null; variables: TVariables }) => void;
 
 	data: TData | undefined = $state(undefined);
 	error: Error | null = $state(null);
@@ -302,8 +302,8 @@ export class Mutation<TData, TVariables = void> {
 			this.error = null;
 			this.status = "success";
 			this.#isPending = false;
-			this.#onSuccess?.(data, variables);
-			this.#onSettled?.(data, null, variables);
+			this.#onSuccess?.({ data, variables });
+			this.#onSettled?.({ data, error: null, variables });
 			return data;
 		} catch (err) {
 			const error = err instanceof Error ? err : new Error(String(err));
@@ -311,8 +311,8 @@ export class Mutation<TData, TVariables = void> {
 			this.error = error;
 			this.status = "error";
 			this.#isPending = false;
-			this.#onError?.(error, variables);
-			this.#onSettled?.(undefined, error, variables);
+			this.#onError?.({ error, variables });
+			this.#onSettled?.({ data: undefined, error, variables });
 			throw error;
 		}
 	}
