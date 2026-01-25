@@ -6,11 +6,11 @@
 		userPostsQuery,
 		userQuery,
 	} from "@lib/queries.svelte";
-	import { current, resolve } from "@router";
+	import { resolve, router } from "@router";
 
 	let activeTab = $state<"profile" | "posts" | "albums">("profile");
 
-	const userId = $derived(parseInt($current.params.id || "0"));
+	const userId = $derived(parseInt(router.current.params.id || "0"));
 
 	const user = $derived(userQuery(userId));
 	const posts = $derived(userPostsQuery(userId));

@@ -2,7 +2,7 @@
 	import { api } from "@lib/api";
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
-	import { current, resolve } from "@router";
+	import { resolve, router } from "@router";
 
 	let postId = $state("");
 	let post = $state(null);
@@ -13,7 +13,7 @@
 	let showComments = $state(true);
 
 	$effect(() => {
-		const newPostId = $current.params.id;
+		const newPostId = router.current.params.id;
 
 		if (!newPostId) {
 			error = "Invalid post ID";

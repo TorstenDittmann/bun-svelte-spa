@@ -5,9 +5,9 @@
 		userQuery,
 		userSubmissionsQuery,
 	} from "../lib/queries.svelte";
-	import { current } from "../router";
+	import { router } from "../router";
 
-	const userId = $derived($current.params.id || "");
+	const userId = $derived(router.current.params.id || "");
 	const user = $derived(userQuery(userId));
 	const submissions = $derived(userSubmissionsQuery(userId));
 

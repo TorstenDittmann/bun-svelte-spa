@@ -1,8 +1,8 @@
 <script>
-	import { current } from "@router";
+	import { router } from "@router";
 </script>
 
 <h1>user</h1>
 
-<p>User ID: {$current.params.id}</p>
-<p>Current path: {$current.path}</p>
+<p>User ID: {router.current.params.id}</p>
+<p>Current path: {router.current.path}</p>

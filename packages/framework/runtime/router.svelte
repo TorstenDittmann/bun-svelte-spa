@@ -3,11 +3,9 @@
 
 	/**
 	 * Component props
-	 * @type {{ router: import('./router').RouterInstance<any>, fallback?: import('svelte').Component | null }}
+	 * @type {{ router: import('./router.svelte').RouterInstance<any>, fallback?: import('svelte').Component | null }}
 	 */
 	let { router, fallback = null } = $props();
-
-	const { current } = router;
 
 	/**
 	 * Handles click events on links to enable SPA navigation
@@ -43,12 +41,12 @@
 	});
 </script>
 
-{#if $current.route}
-	{#if $current.route.parents?.length}
-		{@const parents = $current.route.parents}
-		{@const Component = $current.route.component}
-		{@const routeProps = $current.route.props || {}}
-		{@const params = $current.params}
+{#if router.current.route}
+	{#if router.current.route.parents?.length}
+		{@const parents = router.current.route.parents}
+		{@const Component = router.current.route.component}
+		{@const routeProps = router.current.route.props || {}}
+		{@const params = router.current.params}
 
 		{#snippet renderLevel(index)}
 			{#if index < parents.length}
@@ -63,16 +61,19 @@
 
 		{@render renderLevel(0)}
 	{:else}
-		{@const Component = $current.route.component}
-		<Component params={$current.params} {...($current.route.props || {})} />
+		{@const Component = router.current.route.component}
+		<Component
+			params={router.current.params}
+			{...(router.current.route.props || {})}
+		/>
 	{/if}
 {:else if fallback}
 	{@const Fallback = fallback}
-	<Fallback path={$current.path} />
+	<Fallback path={router.current.path} />
 {:else}
 	<div>
 		<h1>404 - Page Not Found</h1>
-		<p>The page "{$current.path}" could not be found.</p>
+		<p>The page "{router.current.path}" could not be found.</p>
 		<a href="/">Go Home</a>
 	</div>
 {/if}

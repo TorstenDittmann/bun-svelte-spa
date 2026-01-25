@@ -3,9 +3,9 @@
 	import Spinner from "../components/Spinner.svelte";
 	import { getDomain, timeAgo } from "../lib/api";
 	import { itemQuery } from "../lib/queries.svelte";
-	import { current, resolve } from "../router";
+	import { resolve, router } from "../router";
 
-	const id = $derived(parseInt($current.params.id || "0", 10));
+	const id = $derived(parseInt(router.current.params.id || "0", 10));
 	const item = $derived(itemQuery(id));
 
 	const domain = $derived(getDomain(item.data?.url));

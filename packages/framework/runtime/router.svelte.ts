@@ -1,5 +1,4 @@
 import { createRouter, type RadixRouter } from "radix3";
-import { derived, type Readable, type Writable, writable } from "svelte/store";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Component = import("svelte").Component<any, any, any>;
@@ -100,21 +99,17 @@ export class RouterInstance<T extends readonly Route[]> {
 	private after_navigate_callbacks: Set<AfterNavigateCallback> = new Set();
 	private navigation_type: NavigationType = "goto";
 	readonly routes: T;
-	readonly current: Writable<RouteState>;
-	readonly queryParams: Readable<QueryParams>;
+	current: RouteState = $state({
+		route: null,
+		params: {},
+		path: "",
+	});
+	readonly queryParams: QueryParams = $derived(this.createQueryParams());
 
 	constructor(routes: T) {
 		this.routes = routes;
 		this.flattened_routes = flatten_routes(routes);
 		this.radix_router = createRouter<FlattenedRoute>();
-		this.current = writable<RouteState>({
-			route: null,
-			params: {},
-			path: "",
-		});
-
-		// Derive query params from current route
-		this.queryParams = derived(this.current, () => this.createQueryParams());
 
 		// Register flattened routes
 		for (const route of this.flattened_routes) {
@@ -254,7 +249,7 @@ export class RouterInstance<T extends readonly Route[]> {
 			path: pathname,
 		};
 
-		this.current.set(to);
+		this.current = to;
 
 		// Run afterNavigate callbacks
 		for (const callback of this.after_navigate_callbacks) {
@@ -276,11 +271,7 @@ export class RouterInstance<T extends readonly Route[]> {
 	}
 
 	private get_current_state(): RouteState {
-		let state: RouteState = { route: null, params: {}, path: "" };
-		this.current.subscribe((s: RouteState) => {
-			state = s;
-		})();
-		return state;
+		return this.current;
 	}
 
 	private interpolate_path(path: string, params: Record<string, string>): string {
@@ -332,8 +323,8 @@ export class RouterInstance<T extends readonly Route[]> {
 			window.history.pushState({}, "", newUrl);
 		}
 
-		// Trigger update to refresh queryParams store
-		this.current.update((state) => ({ ...state }));
+		// Trigger update to refresh queryParams
+		this.current = { ...this.current };
 	}
 
 	isActive(path: string, options: { exact?: boolean } = {}): boolean {

@@ -2,7 +2,7 @@
 	import { api } from "@lib/api";
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
-	import { current, resolve } from "@router";
+	import { resolve, router } from "@router";
 
 	let userId = $state("");
 	let user = $state(null);
@@ -41,7 +41,7 @@
 	});
 
 	$effect(() => {
-		const newUserId = $current.params.id;
+		const newUserId = router.current.params.id;
 
 		if (!newUserId) {
 			error = "Invalid user ID";

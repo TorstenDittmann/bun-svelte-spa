@@ -4,7 +4,7 @@
 	import StoryItem from "../components/StoryItem.svelte";
 	import type { StoryType } from "../lib/api";
 	import { storiesQuery } from "../lib/queries.svelte";
-	import { queryParams, setQueryParams } from "../router";
+	import { router, setQueryParams } from "../router";
 
 	interface Props {
 		type: StoryType;
@@ -12,7 +12,9 @@
 
 	let { type }: Props = $props();
 
-	const page = $derived(parseInt($queryParams.get("p") || "1", 10));
+	const page = $derived(
+		parseInt(router.queryParams.get("p") || "1", 10),
+	);
 	const stories = $derived(storiesQuery(type, page));
 
 	const titles: Record<StoryType, string> = {

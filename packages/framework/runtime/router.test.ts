@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "bun:test";
 import type { Component } from "svelte";
-import { get } from "svelte/store";
-import { create_router, RouterInstance } from "./router.ts";
+import { create_router, RouterInstance } from "./router.svelte.ts";
 
 // Mock Svelte components for testing
 const MockRoute = {} as Component;
@@ -132,13 +131,12 @@ describe("router", () => {
 			} as any;
 		});
 
-		it("should have a current store", () => {
-			const currentStore = router.current;
-			expect(currentStore).toBeDefined();
+		it("should have a current state", () => {
+			const currentState = router.current;
+			expect(currentState).toBeDefined();
 
 			// Initial state should be set
-			const initialState = get(currentStore);
-			expect(initialState).toEqual({
+			expect(currentState).toEqual({
 				route: null,
 				params: {},
 				path: "",
@@ -150,7 +148,7 @@ describe("router", () => {
 
 			await router.updateRoute();
 
-			const state = get(router.current);
+			const state = router.current;
 			expect(state.route?.path).toBe("/user/:id");
 			expect(state.route?.component).toBe(MockRoute);
 			expect(state.route?.parents).toEqual([]);
@@ -220,29 +218,29 @@ describe("router", () => {
 		});
 
 		it("should get single query param value", () => {
-			const params = get(router.queryParams);
+			const params = router.queryParams;
 			expect(params.get("search")).toBe("foo");
 			expect(params.get("page")).toBe("2");
 		});
 
 		it("should return null for missing query param", () => {
-			const params = get(router.queryParams);
+			const params = router.queryParams;
 			expect(params.get("nonexistent")).toBe(null);
 		});
 
 		it("should get all values for repeated query param", () => {
-			const params = get(router.queryParams);
+			const params = router.queryParams;
 			expect(params.getAll("tags")).toEqual(["a", "b"]);
 		});
 
 		it("should check if query param exists", () => {
-			const params = get(router.queryParams);
+			const params = router.queryParams;
 			expect(params.has("search")).toBe(true);
 			expect(params.has("nonexistent")).toBe(false);
 		});
 
 		it("should convert to string", () => {
-			const params = get(router.queryParams);
+			const params = router.queryParams;
 			expect(params.toString()).toBe("search=foo&page=2&tags=a&tags=b");
 		});
 	});
@@ -414,7 +412,7 @@ describe("router", () => {
 			await router.navigate("/about");
 
 			expect(mockPushState.called).toBe(false);
-			expect(get(router.current).path).toBe("/");
+			expect(router.current.path).toBe("/");
 		});
 
 		it("should call afterNavigate callback after navigation", async () => {
@@ -560,7 +558,7 @@ describe("nested routes", () => {
 		it("should resolve parent components when updateRoute is called", async () => {
 			await router.updateRoute();
 
-			const state = get(router.current);
+			const state = router.current;
 			expect(state.route?.path).toBe("/dashboard");
 			expect(state.route?.component).toBe(MockDashboardIndex);
 			expect(state.route?.parents).toEqual([MockLayout]);
@@ -570,7 +568,7 @@ describe("nested routes", () => {
 			global.window.location.pathname = "/admin/reports";
 			await router.updateRoute();
 
-			const state = get(router.current);
+			const state = router.current;
 			expect(state.route?.path).toBe("/admin/reports");
 			expect(state.route?.component).toBe(MockReportsIndex);
 			expect(state.route?.parents).toEqual([MockAdminLayout, MockReportsLayout]);

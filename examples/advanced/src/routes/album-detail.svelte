@@ -2,7 +2,7 @@
 	import { api } from "@lib/api";
 	import ErrorMessage from "@lib/components/ErrorMessage.svelte";
 	import LoadingSpinner from "@lib/components/LoadingSpinner.svelte";
-	import { current, goto, resolve } from "@router";
+	import { goto, resolve, router } from "@router";
 
 	let albumId = $state("");
 	let album = $state(null);
@@ -15,7 +15,7 @@
 	let currentPhotoIndex = $state(0);
 
 	$effect(() => {
-		const newAlbumId = $current.params.id;
+		const newAlbumId = router.current.params.id;
 
 		if (!newAlbumId) {
 			error = "Invalid album ID";
