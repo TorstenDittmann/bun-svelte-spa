@@ -1,7 +1,8 @@
 import { createRouter, type RadixRouter } from "radix3";
 import { derived, type Readable, type Writable, writable } from "svelte/store";
 
-type Component = import("svelte").Component;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Component = import("svelte").Component<any, any, any>;
 type ComponentOrLoader = Component | (() => Promise<{ default: Component }>);
 
 export type Route = {

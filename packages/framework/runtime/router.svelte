@@ -44,30 +44,31 @@
 </script>
 
 {#if $current.route}
-	{#snippet renderNested(parents, index)}
-		{#if index < parents.length}
-			{@render 	parents[index]({
-		params: $current.params,
-		children: renderNested(parents, index + 1),
-	})}
-		{:else}
-			{@render 	$current.route.component({
-		params: $current.params,
-		...($current.route.props || {}),
-	})}
-		{/if}
-	{/snippet}
-
 	{#if $current.route.parents?.length}
-		{@render renderNested($current.route.parents, 0)}
+		{@const parents = $current.route.parents}
+		{@const Component = $current.route.component}
+		{@const routeProps = $current.route.props || {}}
+		{@const params = $current.params}
+
+		{#snippet renderLevel(index)}
+			{#if index < parents.length}
+				{@const Parent = parents[index]}
+				<Parent {params}>
+					{@render renderLevel(index + 1)}
+				</Parent>
+			{:else}
+				<Component {params} {...routeProps} />
+			{/if}
+		{/snippet}
+
+		{@render renderLevel(0)}
 	{:else}
-		{@render 	$current.route.component({
-		params: $current.params,
-		...($current.route.props || {}),
-	})}
+		{@const Component = $current.route.component}
+		<Component params={$current.params} {...($current.route.props || {})} />
 	{/if}
 {:else if fallback}
-	{@render fallback({ path: $current.path })}
+	{@const Fallback = fallback}
+	<Fallback path={$current.path} />
 {:else}
 	<div>
 		<h1>404 - Page Not Found</h1>
