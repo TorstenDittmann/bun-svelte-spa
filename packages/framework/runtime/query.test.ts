@@ -249,7 +249,7 @@ describe("query", () => {
 
 			const mutation = createMutation({
 				fn: (data: string) => Promise.resolve(data.toUpperCase()),
-				onSuccess: (data, variables) => {
+				onSuccess: ({ data, variables }) => {
 					successData = data;
 					successVariables = variables;
 				},
@@ -266,8 +266,8 @@ describe("query", () => {
 			let errorVariables: string | undefined;
 
 			const mutation = createMutation({
-				fn: () => Promise.reject(new Error("error test")),
-				onError: (error, variables) => {
+				fn: (_variables: string) => Promise.reject(new Error("error test")),
+				onError: ({ error, variables }) => {
 					errorMessage = error.message;
 					errorVariables = variables;
 				},
@@ -285,7 +285,7 @@ describe("query", () => {
 
 			const mutation = createMutation({
 				fn: (data: string) => Promise.resolve(data),
-				onSettled: (data, error) => {
+				onSettled: ({ data, error }) => {
 					settledData = data;
 					settledError = error;
 				},
@@ -294,7 +294,7 @@ describe("query", () => {
 			await mutation.mutate("test");
 
 			expect(settledData).toBe("test");
-			expect(settledError).toBe(null);
+			expect(settledError).toBeNull();
 		});
 
 		it("should call onSettled callback on error", async () => {
@@ -303,7 +303,7 @@ describe("query", () => {
 
 			const mutation = createMutation<string, string>({
 				fn: () => Promise.reject(new Error("settled error")),
-				onSettled: (data, error) => {
+				onSettled: ({ data, error }) => {
 					settledData = data;
 					settledError = error;
 				},
@@ -312,7 +312,7 @@ describe("query", () => {
 			await mutation.mutate("test");
 
 			expect(settledData).toBe(undefined);
-			expect(settledError?.message).toBe("settled error");
+			expect(settledError!.message).toBe("settled error");
 		});
 
 		it("should reset mutation state", async () => {

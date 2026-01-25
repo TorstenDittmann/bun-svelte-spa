@@ -5,6 +5,12 @@ import { create_router, RouterInstance } from "./router.ts";
 
 // Mock Svelte components for testing
 const MockRoute = {} as Component;
+const MockLayout = {} as Component;
+const MockDashboardIndex = {} as Component;
+const MockDashboardSettings = {} as Component;
+const MockAdminLayout = {} as Component;
+const MockReportsLayout = {} as Component;
+const MockReportsIndex = {} as Component;
 
 describe("router", () => {
 	const routes = [
@@ -35,25 +41,33 @@ describe("router", () => {
 	describe("route matching", () => {
 		it("should match exact static routes", () => {
 			const result = router.match("/");
-			expect(result.route).toBe(routes[0]);
+			expect(result.route?.path).toBe("/");
+			expect(result.route?.component).toBe(MockRoute);
+			expect(result.route?.parents).toEqual([]);
 			expect(result.params).toEqual({});
 		});
 
 		it("should match static routes with trailing paths", () => {
 			const result = router.match("/about");
-			expect(result.route).toBe(routes[1]);
+			expect(result.route?.path).toBe("/about");
+			expect(result.route?.component).toBe(MockRoute);
+			expect(result.route?.parents).toEqual([]);
 			expect(result.params).toEqual({});
 		});
 
 		it("should match routes with single parameter", () => {
 			const result = router.match("/user/123");
-			expect(result.route).toEqual(routes[2]);
+			expect(result.route?.path).toBe("/user/:id");
+			expect(result.route?.component).toBe(MockRoute);
+			expect(result.route?.parents).toEqual([]);
 			expect(result.params).toEqual({ id: "123" });
 		});
 
 		it("should match routes with multiple segments and parameter", () => {
 			const result = router.match("/user/456/posts");
-			expect(result.route).toEqual(routes[3]);
+			expect(result.route?.path).toBe("/user/:id/posts");
+			expect(result.route?.component).toBe(MockRoute);
+			expect(result.route?.parents).toEqual([]);
 			expect(result.params).toEqual({ id: "456" });
 		});
 
@@ -65,7 +79,8 @@ describe("router", () => {
 
 		it("should handle parameters with special characters", () => {
 			const result = router.match("/user/user-123_test/posts");
-			expect(result.route).toEqual(routes[3]);
+			expect(result.route?.path).toBe("/user/:id/posts");
+			expect(result.route?.component).toBe(MockRoute);
 			expect(result.params).toEqual({ id: "user-123_test" });
 		});
 	});
@@ -130,13 +145,15 @@ describe("router", () => {
 			});
 		});
 
-		it("should update current store when updateRoute is called", () => {
+		it("should update current store when updateRoute is called", async () => {
 			global.window.location.pathname = "/user/123";
 
-			router.updateRoute();
+			await router.updateRoute();
 
 			const state = get(router.current);
-			expect(state.route).toEqual(routes[2]); // user route
+			expect(state.route?.path).toBe("/user/:id");
+			expect(state.route?.component).toBe(MockRoute);
+			expect(state.route?.parents).toEqual([]);
 			expect(state.params).toEqual({ id: "123" });
 			expect(state.path).toBe("/user/123");
 		});
@@ -302,7 +319,7 @@ describe("router", () => {
 	});
 
 	describe("isActive", () => {
-		beforeEach(() => {
+		beforeEach(async () => {
 			global.window = {
 				location: {
 					pathname: "/users/123",
@@ -313,41 +330,41 @@ describe("router", () => {
 					replaceState: () => {},
 				},
 			} as any;
-			router.updateRoute();
+			await router.updateRoute();
 		});
 
-		it("should return true for exact match", () => {
+		it("should return true for exact match", async () => {
 			global.window.location.pathname = "/about";
-			router.updateRoute();
+			await router.updateRoute();
 
 			expect(router.isActive("/about")).toBe(true);
 			expect(router.isActive("/about", { exact: true })).toBe(true);
 		});
 
-		it("should return true for prefix match without exact option", () => {
+		it("should return true for prefix match without exact option", async () => {
 			global.window.location.pathname = "/user/123";
-			router.updateRoute();
+			await router.updateRoute();
 
 			expect(router.isActive("/user")).toBe(true);
 		});
 
-		it("should return false for prefix match with exact option", () => {
+		it("should return false for prefix match with exact option", async () => {
 			global.window.location.pathname = "/user/123";
-			router.updateRoute();
+			await router.updateRoute();
 
 			expect(router.isActive("/user", { exact: true })).toBe(false);
 		});
 
-		it("should return false for non-matching path", () => {
+		it("should return false for non-matching path", async () => {
 			global.window.location.pathname = "/about";
-			router.updateRoute();
+			await router.updateRoute();
 
 			expect(router.isActive("/users")).toBe(false);
 		});
 
-		it("should handle root path correctly", () => {
+		it("should handle root path correctly", async () => {
 			global.window.location.pathname = "/";
-			router.updateRoute();
+			await router.updateRoute();
 
 			expect(router.isActive("/")).toBe(true);
 			expect(router.isActive("/", { exact: true })).toBe(true);
@@ -457,6 +474,106 @@ describe("router", () => {
 			await router.navigate("/about", false, "goto");
 
 			expect(types).toEqual(["link", "popstate", "goto"]);
+		});
+	});
+});
+
+describe("nested routes", () => {
+	const nestedRoutes = [
+		{ path: "/", component: MockRoute },
+		{
+			path: "/dashboard",
+			component: MockLayout,
+			children: [
+				{ path: "/", component: MockDashboardIndex },
+				{ path: "/settings", component: MockDashboardSettings },
+			],
+		},
+		{
+			path: "/admin",
+			component: MockAdminLayout,
+			children: [
+				{
+					path: "/reports",
+					component: MockReportsLayout,
+					children: [{ path: "/", component: MockReportsIndex }],
+				},
+			],
+		},
+	] as const;
+
+	let router: RouterInstance<typeof nestedRoutes>;
+
+	beforeEach(() => {
+		router = create_router(nestedRoutes);
+	});
+
+	describe("route flattening", () => {
+		it("should flatten nested routes correctly", () => {
+			// /dashboard -> /dashboard/ with Layout as parent
+			const dashboardIndex = router.match("/dashboard");
+			expect(dashboardIndex.route?.path).toBe("/dashboard");
+			expect(dashboardIndex.route?.component).toBe(MockDashboardIndex);
+			expect(dashboardIndex.route?.parents).toEqual([MockLayout]);
+		});
+
+		it("should flatten nested settings route", () => {
+			const settings = router.match("/dashboard/settings");
+			expect(settings.route?.path).toBe("/dashboard/settings");
+			expect(settings.route?.component).toBe(MockDashboardSettings);
+			expect(settings.route?.parents).toEqual([MockLayout]);
+		});
+
+		it("should handle deeply nested routes", () => {
+			const reportsIndex = router.match("/admin/reports");
+			expect(reportsIndex.route?.path).toBe("/admin/reports");
+			expect(reportsIndex.route?.component).toBe(MockReportsIndex);
+			expect(reportsIndex.route?.parents).toEqual([MockAdminLayout, MockReportsLayout]);
+		});
+
+		it("should still match root route without parents", () => {
+			const root = router.match("/");
+			expect(root.route?.path).toBe("/");
+			expect(root.route?.component).toBe(MockRoute);
+			expect(root.route?.parents).toEqual([]);
+		});
+	});
+
+	describe("resolved routes with parents", () => {
+		let mockPushState: { called: boolean; args: any[] | null };
+
+		beforeEach(() => {
+			mockPushState = { called: false, args: null };
+			global.window = {
+				location: { pathname: "/dashboard", search: "" },
+				history: {
+					pushState: (...args: any[]) => {
+						mockPushState.called = true;
+						mockPushState.args = args;
+						global.window.location.pathname = args[2] as string;
+					},
+					replaceState: () => {},
+				},
+			} as any;
+		});
+
+		it("should resolve parent components when updateRoute is called", async () => {
+			await router.updateRoute();
+
+			const state = get(router.current);
+			expect(state.route?.path).toBe("/dashboard");
+			expect(state.route?.component).toBe(MockDashboardIndex);
+			expect(state.route?.parents).toEqual([MockLayout]);
+		});
+
+		it("should resolve deeply nested parent components", async () => {
+			global.window.location.pathname = "/admin/reports";
+			await router.updateRoute();
+
+			const state = get(router.current);
+			expect(state.route?.path).toBe("/admin/reports");
+			expect(state.route?.component).toBe(MockReportsIndex);
+			expect(state.route?.parents).toEqual([MockAdminLayout, MockReportsLayout]);
 		});
 	});
 });

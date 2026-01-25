@@ -44,10 +44,28 @@
 </script>
 
 {#if $current.route}
-	{@render 	$current.route.component({
+	{#snippet renderNested(parents, index)}
+		{#if index < parents.length}
+			{@render 	parents[index]({
+		params: $current.params,
+		children: renderNested(parents, index + 1),
+	})}
+		{:else}
+			{@render 	$current.route.component({
 		params: $current.params,
 		...($current.route.props || {}),
 	})}
+		{/if}
+	{/snippet}
+
+	{#if $current.route.parents?.length}
+		{@render renderNested($current.route.parents, 0)}
+	{:else}
+		{@render 	$current.route.component({
+		params: $current.params,
+		...($current.route.props || {}),
+	})}
+	{/if}
 {:else if fallback}
 	{@render fallback({ path: $current.path })}
 {:else}

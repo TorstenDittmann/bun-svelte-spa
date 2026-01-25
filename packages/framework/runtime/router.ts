@@ -1,16 +1,31 @@
 import { createRouter, type RadixRouter } from "radix3";
 import { derived, type Readable, type Writable, writable } from "svelte/store";
 
+type Component = import("svelte").Component;
+type ComponentOrLoader = Component | (() => Promise<{ default: Component }>);
+
 export type Route = {
 	path: string;
-	component:
-		| import("svelte").Component
-		| (() => Promise<{ default: import("svelte").Component }>);
+	component: ComponentOrLoader;
 	props?: Record<string, unknown>;
+	children?: readonly Route[];
+};
+
+// Internal type for flattened routes
+type FlattenedRoute = Route & {
+	parents: ComponentOrLoader[];
+};
+
+// Resolved route after loading - component and parents are loaded
+export type ResolvedRoute = {
+	path: string;
+	component: Component;
+	props?: Record<string, unknown>;
+	parents: Component[];
 };
 
 export type RouteState = {
-	route: Route | null;
+	route: ResolvedRoute | null;
 	params: Record<string, string>;
 	path: string;
 };
@@ -28,6 +43,37 @@ export type BeforeNavigateCallback = (
 ) => void | Promise<void>;
 
 export type AfterNavigateCallback = (navigation: Navigation) => void;
+
+function join_paths(base: string, path: string): string {
+	if (path === "/") return base || "/";
+	const combined = `${base}/${path}`.replace(/\/+/g, "/");
+	return combined || "/";
+}
+
+function flatten_routes(
+	routes: readonly Route[],
+	base_path = "",
+	parents: FlattenedRoute["parents"] = [],
+): FlattenedRoute[] {
+	const result: FlattenedRoute[] = [];
+
+	for (const route of routes) {
+		const full_path = join_paths(base_path, route.path);
+		const route_parents = route.children
+			? [...parents, route.component] // This route is a parent/layout
+			: parents;
+
+		if (route.children) {
+			// Flatten children, passing this component as a parent
+			result.push(...flatten_routes(route.children, full_path, route_parents));
+		} else {
+			// Leaf route
+			result.push({ ...route, path: full_path, parents });
+		}
+	}
+
+	return result;
+}
 
 type ExtractPaths<T extends readonly Route[]> = T[number]["path"];
 
@@ -47,7 +93,8 @@ export type QueryParams = {
 };
 
 export class RouterInstance<T extends readonly Route[]> {
-	private radix_router: RadixRouter<Route>;
+	private radix_router: RadixRouter<FlattenedRoute>;
+	private flattened_routes: FlattenedRoute[];
 	private before_navigate_callbacks: Set<BeforeNavigateCallback> = new Set();
 	private after_navigate_callbacks: Set<AfterNavigateCallback> = new Set();
 	private navigation_type: NavigationType = "goto";
@@ -57,7 +104,8 @@ export class RouterInstance<T extends readonly Route[]> {
 
 	constructor(routes: T) {
 		this.routes = routes;
-		this.radix_router = createRouter<Route>();
+		this.flattened_routes = flatten_routes(routes);
+		this.radix_router = createRouter<FlattenedRoute>();
 		this.current = writable<RouteState>({
 			route: null,
 			params: {},
@@ -67,9 +115,8 @@ export class RouterInstance<T extends readonly Route[]> {
 		// Derive query params from current route
 		this.queryParams = derived(this.current, () => this.createQueryParams());
 
-		// Add all routes to the radix3 router
-		for (const route of routes) {
-			// radix3 supports :param syntax natively
+		// Register flattened routes
+		for (const route of this.flattened_routes) {
 			this.radix_router.insert(route.path, route);
 		}
 
@@ -95,7 +142,7 @@ export class RouterInstance<T extends readonly Route[]> {
 		return () => this.after_navigate_callbacks.delete(callback);
 	}
 
-	match(pathname: string): { route: Route | null; params: Record<string, string> } {
+	match(pathname: string): { route: FlattenedRoute | null; params: Record<string, string> } {
 		const match = this.radix_router.lookup(pathname);
 		if (!match) {
 			return { route: null, params: {} };
@@ -108,12 +155,12 @@ export class RouterInstance<T extends readonly Route[]> {
 			Object.assign(params, match.params);
 		}
 
-		// Return the original route data without the params that radix3 may have added
-		const originalRoute = this.routes.find(
+		// Return the original flattened route data
+		const original_route = this.flattened_routes.find(
 			(r) => r.path === match.path && r.component === match.component,
 		);
 
-		return { route: originalRoute || match, params };
+		return { route: original_route || match, params };
 	}
 
 	goto<P extends ExtractPaths<T>>(
@@ -150,8 +197,9 @@ export class RouterInstance<T extends readonly Route[]> {
 		this.navigation_type = type;
 
 		const from = this.get_current_state();
-		const { route: to_route, params: to_params } = this.match(path);
-		const to: RouteState = { route: to_route, params: to_params, path };
+		const { params: to_params } = this.match(path);
+		// Route is null in beforeNavigate since components aren't loaded yet
+		const to: RouteState = { route: null, params: to_params, path };
 
 		// Run beforeNavigate callbacks
 		let cancelled = false;
@@ -180,22 +228,27 @@ export class RouterInstance<T extends readonly Route[]> {
 		const pathname = window.location.pathname;
 		const { route: matched_route, params: route_params } = this.match(pathname);
 
-		if (matched_route && matched_route.component) {
-			const component = matched_route.component as unknown;
-			// Check if it's a dynamic import (function with no args)
-			// Svelte 5 components have 2 args (anchor, props)
-			if (typeof component === "function" && component.length === 0) {
-				try {
-					const module = await component();
-					matched_route.component = module.default;
-				} catch (error) {
-					console.error("Failed to load route component:", error);
-				}
-			}
+		let resolved_route: ResolvedRoute | null = null;
+
+		if (matched_route) {
+			// Load main component
+			const component = await this.loadComponent(matched_route.component);
+
+			// Load parent components (layouts)
+			const parents = await Promise.all(
+				matched_route.parents.map((p) => this.loadComponent(p)),
+			);
+
+			resolved_route = {
+				path: matched_route.path,
+				component,
+				props: matched_route.props,
+				parents,
+			};
 		}
 
 		const to: RouteState = {
-			route: matched_route,
+			route: resolved_route,
 			params: route_params,
 			path: pathname,
 		};
@@ -206,6 +259,19 @@ export class RouterInstance<T extends readonly Route[]> {
 		for (const callback of this.after_navigate_callbacks) {
 			callback({ from, to, type: this.navigation_type });
 		}
+	}
+
+	private async loadComponent(comp: ComponentOrLoader): Promise<Component> {
+		if (typeof comp === "function" && comp.length === 0) {
+			try {
+				const module = await (comp as () => Promise<{ default: Component }>)();
+				return module.default;
+			} catch (error) {
+				console.error("Failed to load route component:", error);
+				throw error;
+			}
+		}
+		return comp as Component;
 	}
 
 	private get_current_state(): RouteState {
