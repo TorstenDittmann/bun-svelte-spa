@@ -1,7 +1,16 @@
-import { type BuildConfig, type BuildOutput } from "bun";
+import { type BuildConfig, type BuildOutput, color } from "bun";
 import { SveltePlugin } from "bun-plugin-svelte";
 import type { Route } from "./runtime/router.svelte.ts";
 import { collectStaticRoutes, generateStaticFiles } from "./static";
+
+const RESET = "\x1b[0m";
+const BOLD = "\x1b[1m";
+const DIM = "\x1b[2m";
+const green = color("green", "ansi") ?? "";
+const red = color("red", "ansi") ?? "";
+const cyan = color("cyan", "ansi") ?? "";
+const yellow = color("yellow", "ansi") ?? "";
+const magenta = color("magenta", "ansi") ?? "";
 
 function formatBytes(bytes: number): string {
 	if (bytes < 1024) return `${bytes} B`;
@@ -39,21 +48,21 @@ function printBuildOutput(output: BuildOutput, outdir: string, duration: number)
 	}
 
 	console.log();
-	console.log(`\x1b[1m\x1b[32mBuild completed\x1b[0m in ${formatDuration(duration)}`);
+	console.log(`${BOLD}${green}Build completed${RESET} in ${formatDuration(duration)}`);
 	console.log();
-	console.log(`\x1b[2m${outdir}/\x1b[0m`);
+	console.log(`${DIM}${outdir}/${RESET}`);
 
 	// Print entries
 	for (const file of entries) {
 		const relativePath = file.path.replace(process.cwd() + "/" + outdir + "/", "");
-		console.log(`  \x1b[36m${relativePath}\x1b[0m  ${formatBytes(file.size)}`);
+		console.log(`  ${cyan}${relativePath}${RESET}  ${formatBytes(file.size)}`);
 	}
 
 	// Print chunks
 	if (chunks.length > 0) {
 		for (const file of chunks) {
 			const relativePath = file.path.replace(process.cwd() + "/" + outdir + "/", "");
-			console.log(`  \x1b[33m${relativePath}\x1b[0m  ${formatBytes(file.size)}`);
+			console.log(`  ${yellow}${relativePath}${RESET}  ${formatBytes(file.size)}`);
 		}
 	}
 
@@ -61,18 +70,18 @@ function printBuildOutput(output: BuildOutput, outdir: string, duration: number)
 	if (assets.length > 0) {
 		for (const file of assets) {
 			const relativePath = file.path.replace(process.cwd() + "/" + outdir + "/", "");
-			console.log(`  \x1b[35m${relativePath}\x1b[0m  ${formatBytes(file.size)}`);
+			console.log(`  ${magenta}${relativePath}${RESET}  ${formatBytes(file.size)}`);
 		}
 	}
 
 	console.log();
-	console.log(`\x1b[2mTotal: ${formatBytes(totalSize)} (${outputs.length} files)\x1b[0m`);
+	console.log(`${DIM}Total: ${formatBytes(totalSize)} (${outputs.length} files)${RESET}`);
 	console.log();
 }
 
 function printBuildErrors(output: BuildOutput): void {
 	console.log();
-	console.log(`\x1b[1m\x1b[31mBuild failed\x1b[0m`);
+	console.log(`${BOLD}${red}Build failed${RESET}`);
 	console.log();
 	for (const log of output.logs) {
 		console.error(log);
@@ -133,12 +142,12 @@ export async function build(options: FrameworkBuildOptions) {
 			if (paths.length > 0) {
 				console.log();
 				console.log(
-					`\x1b[1m\x1b[32mStatic rendering\x1b[0m ${paths.length} page(s) in ${
+					`${BOLD}${green}Static rendering${RESET} ${paths.length} page(s) in ${
 						formatDuration(staticDuration)
 					}`,
 				);
 				for (const p of paths) {
-					console.log(`  \x1b[36m${p}\x1b[0m → ${p === "/" ? "index.html" : `${p.slice(1)}/index.html`}`);
+					console.log(`  ${cyan}${p}${RESET} → ${p === "/" ? "index.html" : `${p.slice(1)}/index.html`}`);
 				}
 			}
 		}
