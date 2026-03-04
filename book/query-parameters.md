@@ -21,11 +21,11 @@ Access URL query parameters reactively with `queryParams`:
 ```typescript
 import { queryParams } from "./router";
 
-queryParams.get("q");          // Single value or null
-queryParams.getAll("tag");     // All values for a key
-queryParams.has("filter");     // Check existence
-queryParams.entries();         // Iterator of [key, value] pairs
-queryParams.toString();        // Serialized query string
+queryParams.get("q"); // Single value or null
+queryParams.getAll("tag"); // All values for a key
+queryParams.has("filter"); // Check existence
+queryParams.entries(); // Iterator of [key, value] pairs
+queryParams.toString(); // Serialized query string
 ```
 
 ## Setting query params

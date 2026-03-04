@@ -45,15 +45,15 @@ The framework includes a query and mutation system with automatic caching, inval
 
 Every query exposes reactive state:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `data` | `T \| undefined` | The resolved data |
-| `error` | `Error \| null` | The error, if any |
-| `status` | `"pending" \| "success" \| "error"` | Current status |
-| `isLoading` | `boolean` | First fetch in progress |
-| `isFetching` | `boolean` | Any fetch in progress (including refetches) |
-| `isSuccess` | `boolean` | Data loaded successfully |
-| `isError` | `boolean` | Fetch resulted in an error |
+| Property     | Type                                | Description                                 |
+| ------------ | ----------------------------------- | ------------------------------------------- |
+| `data`       | `T \| undefined`                    | The resolved data                           |
+| `error`      | `Error \| null`                     | The error, if any                           |
+| `status`     | `"pending" \| "success" \| "error"` | Current status                              |
+| `isLoading`  | `boolean`                           | First fetch in progress                     |
+| `isFetching` | `boolean`                           | Any fetch in progress (including refetches) |
+| `isSuccess`  | `boolean`                           | Data loaded successfully                    |
+| `isError`    | `boolean`                           | Fetch resulted in an error                  |
 
 ### Cache keys
 
@@ -62,7 +62,10 @@ Cache keys are arrays. Queries with the same key share cached data:
 ```typescript
 createQuery({ key: ["users"], fn: fetchUsers });
 createQuery({ key: ["users", userId], fn: () => fetchUser(userId) });
-createQuery({ key: ["users", "filtered", { role, status }], fn: () => fetchFiltered({ role, status }) });
+createQuery({
+	key: ["users", "filtered", { role, status }],
+	fn: () => fetchFiltered({ role, status }),
+});
 ```
 
 ### Stale time
@@ -83,9 +86,9 @@ Disable a query until a condition is met:
 
 ```typescript
 const posts = createQuery({
-  key: ["user-posts", userId],
-  fn: () => fetchUserPosts(userId),
-  enabled: () => userId !== null,
+	key: ["user-posts", userId],
+	fn: () => fetchUserPosts(userId),
+	enabled: () => userId !== null,
 });
 ```
 
@@ -93,10 +96,10 @@ const posts = createQuery({
 
 ```typescript
 createQuery({
-  key: ["messages"],
-  fn: fetchMessages,
-  refetchOnWindowFocus: true,  // Refetch when tab regains focus
-  refetchInterval: 60000,      // Poll every minute
+	key: ["messages"],
+	fn: fetchMessages,
+	refetchOnWindowFocus: true, // Refetch when tab regains focus
+	refetchInterval: 60000, // Poll every minute
 });
 ```
 
@@ -104,10 +107,10 @@ createQuery({
 
 ```typescript
 createQuery({
-  key: ["users"],
-  fn: fetchUsers,
-  onSuccess: (data) => console.log("Loaded", data.length, "users"),
-  onError: (error) => console.error("Failed:", error),
+	key: ["users"],
+	fn: fetchUsers,
+	onSuccess: (data) => console.log("Loaded", data.length, "users"),
+	onError: (error) => console.error("Failed:", error),
 });
 ```
 
@@ -119,17 +122,17 @@ createQuery({
 import { createMutation, invalidateQueries } from "bun-svelte-spa/runtime";
 
 const createUser = createMutation({
-  fn: async (userData) => {
-    const res = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    });
-    return res.json();
-  },
-  onSuccess: () => {
-    invalidateQueries(["users"]);
-  },
+	fn: async (userData) => {
+		const res = await fetch("/api/users", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(userData),
+		});
+		return res.json();
+	},
+	onSuccess: () => {
+		invalidateQueries(["users"]);
+	},
 });
 ```
 
@@ -150,18 +153,22 @@ Trigger it:
 import { createMutation, invalidateQueries } from "bun-svelte-spa/runtime";
 
 const create = createMutation({
-  fn: (data) => fetch("/api/items", { method: "POST", body: JSON.stringify(data) }).then(r => r.json()),
-  onSuccess: () => invalidateQueries(["items"]),
+	fn: (data) =>
+		fetch("/api/items", { method: "POST", body: JSON.stringify(data) })
+			.then(r => r.json()),
+	onSuccess: () => invalidateQueries(["items"]),
 });
 
 const update = createMutation({
-  fn: ({ id, data }) => fetch(`/api/items/${id}`, { method: "PUT", body: JSON.stringify(data) }).then(r => r.json()),
-  onSuccess: () => invalidateQueries(["items"]),
+	fn: ({ id, data }) =>
+		fetch(`/api/items/${id}`, { method: "PUT", body: JSON.stringify(data) })
+			.then(r => r.json()),
+	onSuccess: () => invalidateQueries(["items"]),
 });
 
 const remove = createMutation({
-  fn: (id) => fetch(`/api/items/${id}`, { method: "DELETE" }),
-  onSuccess: () => invalidateQueries(["items"]),
+	fn: (id) => fetch(`/api/items/${id}`, { method: "DELETE" }),
+	onSuccess: () => invalidateQueries(["items"]),
 });
 ```
 
@@ -220,22 +227,22 @@ Keep query definitions in dedicated modules:
 import { createQuery, invalidateQueries } from "bun-svelte-spa/runtime";
 
 export function usersQuery() {
-  return createQuery({
-    key: ["users"],
-    fn: () => fetch("/api/users").then(r => r.json()),
-    staleTime: 60000,
-  });
+	return createQuery({
+		key: ["users"],
+		fn: () => fetch("/api/users").then(r => r.json()),
+		staleTime: 60000,
+	});
 }
 
 export function userQuery(id: number) {
-  return createQuery({
-    key: ["users", id],
-    fn: () => fetch(`/api/users/${id}`).then(r => r.json()),
-    staleTime: 60000,
-  });
+	return createQuery({
+		key: ["users", id],
+		fn: () => fetch(`/api/users/${id}`).then(r => r.json()),
+		staleTime: 60000,
+	});
 }
 
 export function invalidateUsers() {
-  invalidateQueries(["users"]);
+	invalidateQueries(["users"]);
 }
 ```

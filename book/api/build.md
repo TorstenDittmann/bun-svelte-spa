@@ -8,7 +8,7 @@ Run a production build. Compiles Svelte components, bundles JavaScript, hashes a
 import { build } from "bun-svelte-spa";
 
 await build({
-  outdir: "./dist",
+	outdir: "./dist",
 });
 ```
 
@@ -16,11 +16,11 @@ await build({
 
 `build()` accepts all [`Bun.BuildConfig`](https://bun.sh/docs/bundler) options plus:
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `outdir` | `string` | `"./dist"` | Output directory |
-| `routes` | `readonly Route[]` | — | Route definitions for static rendering |
-| `plugins` | `BunPlugin[]` | — | Additional Bun plugins (e.g. Tailwind) |
+| Option    | Type               | Default    | Description                            |
+| --------- | ------------------ | ---------- | -------------------------------------- |
+| `outdir`  | `string`           | `"./dist"` | Output directory                       |
+| `routes`  | `readonly Route[]` | —          | Route definitions for static rendering |
+| `plugins` | `BunPlugin[]`      | —          | Additional Bun plugins (e.g. Tailwind) |
 
 The Svelte plugin is added automatically. You don't need to include it.
 
@@ -31,20 +31,20 @@ import { build } from "bun-svelte-spa";
 import { router } from "./src/router";
 
 await build({
-  outdir: "./dist",
-  routes: router.routes,
+	outdir: "./dist",
+	routes: router.routes,
 });
 ```
 
 ### With additional plugins
 
 ```typescript
-import { build } from "bun-svelte-spa";
 import tailwindcss from "@tailwindcss/bun";
+import { build } from "bun-svelte-spa";
 
 await build({
-  outdir: "./dist",
-  plugins: [tailwindcss()],
+	outdir: "./dist",
+	plugins: [tailwindcss()],
 });
 ```
 
@@ -65,10 +65,10 @@ dev({ entrypoint });
 
 ### Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
+| Option       | Type         | Default  | Description                                   |
+| ------------ | ------------ | -------- | --------------------------------------------- |
 | `entrypoint` | `HTMLBundle` | required | The HTML file imported with Bun's HTML import |
-| `port` | `number` | `1337` | Port to listen on |
+| `port`       | `number`     | `1337`   | Port to listen on                             |
 
 The dev server uses Bun's native `serve()` with `development: true` for hot reload. All routes (`/*`) serve the HTML entrypoint, letting the client-side router handle routing.
 

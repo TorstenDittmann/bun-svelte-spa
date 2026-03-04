@@ -15,8 +15,8 @@ goto("/user/:id", { id: "123" });
 
 // Multiple parameters
 goto("/posts/:postId/comments/:commentId", {
-  postId: "1",
-  commentId: "5",
+	postId: "1",
+	commentId: "5",
 });
 ```
 
@@ -58,10 +58,10 @@ Run logic before a route change. Call `cancel()` to prevent the navigation:
 import { beforeNavigate } from "./router";
 
 const unsubscribe = beforeNavigate(({ to, from, type, cancel }) => {
-  if (!isAuthenticated && to.path.startsWith("/admin")) {
-    cancel();
-    goto("/login");
-  }
+	if (!isAuthenticated && to.path.startsWith("/admin")) {
+		cancel();
+		goto("/login");
+	}
 });
 ```
 
@@ -73,11 +73,11 @@ Run logic after a route change completes:
 import { afterNavigate } from "./router";
 
 const unsubscribe = afterNavigate(({ to, from, type }) => {
-  // Track page views
-  analytics.track("pageview", { path: to.path });
+	// Track page views
+	analytics.track("pageview", { path: to.path });
 
-  // Scroll to top
-  window.scrollTo(0, 0);
+	// Scroll to top
+	window.scrollTo(0, 0);
 });
 ```
 
@@ -106,18 +106,18 @@ Both hooks return an unsubscribe function. Clean up in `onDestroy`:
 
 The `type` field in navigation callbacks tells you how the navigation was triggered:
 
-| Type | Trigger |
-|------|---------|
-| `"goto"` | Programmatic `goto()` call |
+| Type         | Trigger                     |
+| ------------ | --------------------------- |
+| `"goto"`     | Programmatic `goto()` call  |
 | `"popstate"` | Browser back/forward button |
-| `"link"` | Clicking an `<a>` tag |
+| `"link"`     | Clicking an `<a>` tag       |
 
 ```typescript
 afterNavigate(({ type }) => {
-  // Only scroll to top for non-history navigations
-  if (type !== "popstate") {
-    window.scrollTo(0, 0);
-  }
+	// Only scroll to top for non-history navigations
+	if (type !== "popstate") {
+		window.scrollTo(0, 0);
+	}
 });
 ```
 

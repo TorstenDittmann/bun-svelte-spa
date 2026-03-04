@@ -8,9 +8,9 @@ Add `static: true` to any route:
 
 ```typescript
 export const router = create_router([
-  { path: "/", component: Home, static: true },
-  { path: "/about", component: About, static: true },
-  { path: "/dashboard", component: Dashboard },  // client-only
+	{ path: "/", component: Home, static: true },
+	{ path: "/about", component: About, static: true },
+	{ path: "/dashboard", component: Dashboard }, // client-only
 ]);
 ```
 
@@ -20,25 +20,25 @@ For routes with parameters, provide a `staticParams` function that returns all p
 
 ```typescript
 export const router = create_router([
-  {
-    path: "/blog/:slug",
-    component: BlogPost,
-    static: true,
-    staticParams: async () => {
-      const posts = await fetchAllPosts();
-      return posts.map(post => ({ slug: post.slug }));
-    },
-  },
-  {
-    path: "/user/:id",
-    component: User,
-    static: true,
-    staticParams: () => [
-      { id: "1" },
-      { id: "2" },
-      { id: "3" },
-    ],
-  },
+	{
+		path: "/blog/:slug",
+		component: BlogPost,
+		static: true,
+		staticParams: async () => {
+			const posts = await fetchAllPosts();
+			return posts.map(post => ({ slug: post.slug }));
+		},
+	},
+	{
+		path: "/user/:id",
+		component: User,
+		static: true,
+		staticParams: () => [
+			{ id: "1" },
+			{ id: "2" },
+			{ id: "3" },
+		],
+	},
 ]);
 ```
 
@@ -54,8 +54,8 @@ import { build } from "bun-svelte-spa";
 import { router } from "./src/router";
 
 await build({
-  outdir: "./dist",
-  routes: router.routes,
+	outdir: "./dist",
+	routes: router.routes,
 });
 ```
 
@@ -95,14 +95,14 @@ If a static route has parent layout components (via nested routes), they are ren
 
 ```typescript
 export const router = create_router([
-  {
-    path: "/docs",
-    component: DocsLayout,
-    children: [
-      { path: "/intro", component: Intro, static: true },
-      { path: "/guide", component: Guide, static: true },
-    ],
-  },
+	{
+		path: "/docs",
+		component: DocsLayout,
+		children: [
+			{ path: "/intro", component: Intro, static: true },
+			{ path: "/guide", component: Guide, static: true },
+		],
+	},
 ]);
 ```
 

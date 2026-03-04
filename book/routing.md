@@ -7,18 +7,27 @@ The router is built on [radix3](https://github.com/unjs/radix3), a fast trie-bas
 Create a `src/router.ts` file:
 
 ```typescript
-import { create_router } from "bun-svelte-spa/runtime";
-import Home from "@routes/index.svelte";
 import About from "@routes/about.svelte";
+import Home from "@routes/index.svelte";
 import User from "@routes/user.svelte";
+import { create_router } from "bun-svelte-spa/runtime";
 
 export const router = create_router([
-  { path: "/", component: Home },
-  { path: "/about", component: About },
-  { path: "/user/:id", component: User },
+	{ path: "/", component: Home },
+	{ path: "/about", component: About },
+	{ path: "/user/:id", component: User },
 ]);
 
-export const { goto, resolve, current, beforeNavigate, afterNavigate, queryParams, setQueryParams, isActive } = router;
+export const {
+	goto,
+	resolve,
+	current,
+	beforeNavigate,
+	afterNavigate,
+	queryParams,
+	setQueryParams,
+	isActive,
+} = router;
 ```
 
 ## Route types
@@ -51,15 +60,15 @@ A route with `children` acts as a layout. Its component wraps all child routes:
 
 ```typescript
 export const router = create_router([
-  {
-    path: "/admin",
-    component: AdminLayout,
-    children: [
-      { path: "/", component: AdminDashboard },
-      { path: "/users", component: AdminUsers },
-      { path: "/users/:id", component: AdminUserDetail },
-    ],
-  },
+	{
+		path: "/admin",
+		component: AdminLayout,
+		children: [
+			{ path: "/", component: AdminDashboard },
+			{ path: "/users", component: AdminUsers },
+			{ path: "/users/:id", component: AdminUserDetail },
+		],
+	},
 ]);
 ```
 
@@ -71,9 +80,9 @@ Use dynamic imports for code splitting. Each route loads only when visited:
 
 ```typescript
 export const router = create_router([
-  { path: "/", component: () => import("@routes/index.svelte") },
-  { path: "/about", component: () => import("@routes/about.svelte") },
-  { path: "/user/:id", component: () => import("@routes/user.svelte") },
+	{ path: "/", component: () => import("@routes/index.svelte") },
+	{ path: "/about", component: () => import("@routes/about.svelte") },
+	{ path: "/user/:id", component: () => import("@routes/user.svelte") },
 ]);
 ```
 
@@ -118,8 +127,8 @@ goto("/user/:id");
 
 // Correct — multiple parameters
 goto("/posts/:postId/comments/:commentId", {
-  postId: "1",
-  commentId: "5",
+	postId: "1",
+	commentId: "5",
 });
 ```
 
@@ -130,12 +139,12 @@ Generate URLs programmatically with `resolve`:
 ```typescript
 import { resolve } from "./router";
 
-resolve("/");                            // "/"
-resolve("/user/:id", { id: "123" });     // "/user/123"
+resolve("/"); // "/"
+resolve("/user/:id", { id: "123" }); // "/user/123"
 resolve("/posts/:postId/comments/:commentId", {
-  postId: "1",
-  commentId: "5",
-});                                      // "/posts/1/comments/5"
+	postId: "1",
+	commentId: "5",
+}); // "/posts/1/comments/5"
 ```
 
 Use resolved URLs in templates:

@@ -55,16 +55,25 @@ Bun processes this HTML file as the build entrypoint. Script and stylesheet refe
 The central route definition file. All routes are declared here with `create_router()`, and the router instance is exported for use throughout the app:
 
 ```typescript
-import { create_router } from "bun-svelte-spa/runtime";
-import Home from "@routes/index.svelte";
 import About from "@routes/about.svelte";
+import Home from "@routes/index.svelte";
+import { create_router } from "bun-svelte-spa/runtime";
 
 export const router = create_router([
-  { path: "/", component: Home },
-  { path: "/about", component: About },
+	{ path: "/", component: Home },
+	{ path: "/about", component: About },
 ]);
 
-export const { goto, resolve, current, beforeNavigate, afterNavigate, queryParams, setQueryParams, isActive } = router;
+export const {
+	goto,
+	resolve,
+	current,
+	beforeNavigate,
+	afterNavigate,
+	queryParams,
+	setQueryParams,
+	isActive,
+} = router;
 ```
 
 Destructuring the router instance gives you importable functions that work anywhere in your app.
