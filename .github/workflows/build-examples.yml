@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                example: [basic, advanced, hackernews]
+                example: [basic, advanced, hackernews, tailwind, benchmark]
             fail-fast: false
 
         steps:
