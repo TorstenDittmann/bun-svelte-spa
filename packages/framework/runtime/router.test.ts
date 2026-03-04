@@ -575,3 +575,38 @@ describe("nested routes", () => {
 		});
 	});
 });
+
+describe("static routes", () => {
+	const MockStaticPage = {} as Component;
+	const MockDynamicPage = {} as Component;
+
+	const staticRoutes = [
+		{ path: "/", component: MockRoute },
+		{ path: "/about", component: MockStaticPage, static: true },
+		{
+			path: "/blog/:slug",
+			component: MockDynamicPage,
+			static: true,
+			staticParams: () => [{ slug: "hello" }, { slug: "world" }],
+		},
+	] as const;
+
+	it("should accept static property on routes", () => {
+		const router = create_router(staticRoutes);
+		expect(router.routes[1].static).toBe(true);
+		expect((router.routes[0] as any).static).toBeUndefined();
+	});
+
+	it("should accept staticParams function on routes", () => {
+		const router = create_router(staticRoutes);
+		const params = (router.routes[2] as any).staticParams();
+		expect(params).toEqual([{ slug: "hello" }, { slug: "world" }]);
+	});
+
+	it("should still match static routes normally at runtime", () => {
+		const router = create_router(staticRoutes);
+		const result = router.match("/about");
+		expect(result.route?.path).toBe("/about");
+		expect(result.route?.component).toBe(MockStaticPage);
+	});
+});
