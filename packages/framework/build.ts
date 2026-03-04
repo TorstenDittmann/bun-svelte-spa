@@ -133,7 +133,9 @@ export async function build(options: FrameworkBuildOptions) {
 			if (paths.length > 0) {
 				console.log();
 				console.log(
-					`\x1b[1m\x1b[32mStatic rendering\x1b[0m ${paths.length} page(s) in ${formatDuration(staticDuration)}`,
+					`\x1b[1m\x1b[32mStatic rendering\x1b[0m ${paths.length} page(s) in ${
+						formatDuration(staticDuration)
+					}`,
 				);
 				for (const p of paths) {
 					console.log(`  \x1b[36m${p}\x1b[0m → ${p === "/" ? "index.html" : `${p.slice(1)}/index.html`}`);

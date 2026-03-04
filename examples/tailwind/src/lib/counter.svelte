@@ -9,7 +9,9 @@
 	>
 		-
 	</button>
-	<span class="text-lg font-semibold tabular-nums w-12 text-center">{count}</span>
+	<span class="text-lg font-semibold tabular-nums w-12 text-center">{
+		count
+	}</span>
 	<button
 		class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
 		onclick={() => count++}

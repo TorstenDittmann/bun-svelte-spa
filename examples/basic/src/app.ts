@@ -1,4 +1,4 @@
-import { mount, hydrate } from "svelte";
+import { hydrate, mount } from "svelte";
 import App from "./app.svelte";
 
 const target = document.querySelector("#root")!;

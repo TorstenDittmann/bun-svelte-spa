@@ -1,6 +1,6 @@
 import { SveltePlugin } from "bun-plugin-svelte";
-import { resolve as resolvePath } from "node:path";
 import { rm } from "node:fs/promises";
+import { resolve as resolvePath } from "node:path";
 import type { Route } from "./runtime/router.svelte.ts";
 
 type ComponentOrLoader = Route["component"];
@@ -256,10 +256,9 @@ export async function generateStaticFiles(
 		const html = injectIntoTemplate(template, body, head);
 
 		// Write to disk
-		const filePath =
-			route.path === "/"
-				? `${outdir}/index.html`
-				: `${outdir}${route.path}/index.html`;
+		const filePath = route.path === "/"
+			? `${outdir}/index.html`
+			: `${outdir}${route.path}/index.html`;
 
 		await Bun.write(filePath, html);
 		generatedPaths.push(route.path);

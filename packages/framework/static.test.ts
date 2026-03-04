@@ -66,7 +66,7 @@ describe("collectStaticRoutes", () => {
 			},
 		];
 		expect(collectStaticRoutes(routes)).rejects.toThrow(
-			'Route "/blog/:slug" has dynamic params but no staticParams function',
+			"Route \"/blog/:slug\" has dynamic params but no staticParams function",
 		);
 	});
 
@@ -103,30 +103,31 @@ describe("injectIntoTemplate", () => {
 
 	it("should inject body HTML into #root", () => {
 		const result = injectIntoTemplate(template, "<h1>Hello</h1>", "");
-		expect(result).toContain('<div id="root"><h1>Hello</h1></div>');
+		expect(result).toContain("<div id=\"root\"><h1>Hello</h1></div>");
 	});
 
 	it("should inject head HTML before </head>", () => {
-		const result = injectIntoTemplate(template, "", '<style>.a{}</style>');
-		expect(result).toContain('<style>.a{}</style></head>');
+		const result = injectIntoTemplate(template, "", "<style>.a{}</style>");
+		expect(result).toContain("<style>.a{}</style></head>");
 	});
 
 	it("should inject both body and head", () => {
 		const result = injectIntoTemplate(template, "<p>Content</p>", "<meta name='x'>");
-		expect(result).toContain('<div id="root"><p>Content</p></div>');
+		expect(result).toContain("<div id=\"root\"><p>Content</p></div>");
 		expect(result).toContain("<meta name='x'></head>");
 	});
 
 	it("should handle #root with extra attributes", () => {
-		const tmpl = '<div data-layout="website" id="root"></div>';
+		const tmpl = "<div data-layout=\"website\" id=\"root\"></div>";
 		const result = injectIntoTemplate(tmpl, "<p>Hi</p>", "");
-		expect(result).toContain('<div data-layout="website" id="root"><p>Hi</p></div>');
+		expect(result).toContain("<div data-layout=\"website\" id=\"root\"><p>Hi</p></div>");
 	});
 
 	it("should rewrite relative asset paths to root-relative", () => {
-		const tmpl = `<head><link rel="stylesheet" href="./_chunks/index-abc.css"><script src="./_chunks/app-def.js"></script></head><body><div id="root"></div></body>`;
+		const tmpl =
+			`<head><link rel="stylesheet" href="./_chunks/index-abc.css"><script src="./_chunks/app-def.js"></script></head><body><div id="root"></div></body>`;
 		const result = injectIntoTemplate(tmpl, "<p>Hi</p>", "");
-		expect(result).toContain('href="/_chunks/index-abc.css"');
-		expect(result).toContain('src="/_chunks/app-def.js"');
+		expect(result).toContain("href=\"/_chunks/index-abc.css\"");
+		expect(result).toContain("src=\"/_chunks/app-def.js\"");
 	});
 });
