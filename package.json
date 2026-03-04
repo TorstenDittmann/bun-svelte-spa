@@ -7,7 +7,9 @@
 	"scripts": {
 		"format": "dprint fmt",
 		"lint": "oxlint && dprint check",
-		"lint:fix": "oxlint --fix"
+		"lint:fix": "oxlint --fix",
+		"dev": "docia dev",
+		"build": "docia build"
 	},
 	"workspaces": [
 		"packages/*",
@@ -15,6 +17,7 @@
 	],
 	"devDependencies": {
 		"@types/bun": "latest",
+		"docia": "^0.0.15",
 		"dprint": "^0.51.1",
 		"oxfmt": "^0.23.0",
 		"oxlint": "^1.38.0",
