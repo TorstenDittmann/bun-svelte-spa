@@ -1,6 +1,11 @@
-import { mount } from "svelte";
+import { mount, hydrate } from "svelte";
 import App from "./app.svelte";
 
-mount(App, {
-	target: document.querySelector("#root")!,
-});
+const target = document.querySelector("#root")!;
+const hasPrerenderedContent = target.innerHTML.trim().length > 0;
+
+if (hasPrerenderedContent) {
+	hydrate(App, { target });
+} else {
+	mount(App, { target });
+}

@@ -9,6 +9,8 @@ export type Route = {
 	component: ComponentOrLoader;
 	props?: Record<string, unknown>;
 	children?: readonly Route[];
+	static?: boolean;
+	staticParams?: () => Promise<Record<string, string>[]> | Record<string, string>[];
 };
 
 // Internal type for flattened routes

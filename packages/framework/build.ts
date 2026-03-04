@@ -1,5 +1,7 @@
 import { type BuildConfig, type BuildOutput } from "bun";
 import { SveltePlugin } from "bun-plugin-svelte";
+import type { Route } from "./runtime/router.svelte.ts";
+import { collectStaticRoutes, generateStaticFiles } from "./static";
 
 function formatBytes(bytes: number): string {
 	if (bytes < 1024) return `${bytes} B`;
@@ -78,13 +80,19 @@ function printBuildErrors(output: BuildOutput): void {
 	console.log();
 }
 
-export async function build(options: Partial<BuildConfig>) {
+export type FrameworkBuildOptions = Partial<BuildConfig> & {
+	/** Route definitions — needed only if any routes use `static: true` */
+	routes?: readonly Route[];
+};
+
+export async function build(options: FrameworkBuildOptions) {
+	const { routes, ...buildConfig } = options;
 	const start = performance.now();
 
 	const svelte_plugin = SveltePlugin();
-	const plugins = options.plugins ? [svelte_plugin, ...options.plugins] : [svelte_plugin];
+	const plugins = buildConfig.plugins ? [svelte_plugin, ...buildConfig.plugins] : [svelte_plugin];
 
-	const outdir = (options.outdir ?? "./dist").replace(/^\.\//, "");
+	const outdir = (buildConfig.outdir ?? "./dist").replace(/^\.\//, "");
 
 	const build_output = await Bun.build({
 		entrypoints: ["./src/index.html"],
@@ -97,7 +105,7 @@ export async function build(options: Partial<BuildConfig>) {
 			chunk: "_chunks/[name]-[hash].[ext]",
 			asset: "_assets/[name]-[hash].[ext]",
 		},
-		...options,
+		...buildConfig,
 		plugins,
 	});
 
@@ -113,6 +121,26 @@ export async function build(options: Partial<BuildConfig>) {
 		Bun.write(`./${outdir}/200.html`, index_html),
 		Bun.write(`./${outdir}/404.html`, index_html),
 	]);
+
+	// Static rendering phase
+	if (routes) {
+		const staticRoutes = await collectStaticRoutes(routes);
+		if (staticRoutes.length > 0) {
+			const staticStart = performance.now();
+			const { paths } = await generateStaticFiles(staticRoutes, outdir);
+			const staticDuration = Math.round(performance.now() - staticStart);
+
+			if (paths.length > 0) {
+				console.log();
+				console.log(
+					`\x1b[1m\x1b[32mStatic rendering\x1b[0m ${paths.length} page(s) in ${formatDuration(staticDuration)}`,
+				);
+				for (const p of paths) {
+					console.log(`  \x1b[36m${p}\x1b[0m → ${p === "/" ? "index.html" : `${p.slice(1)}/index.html`}`);
+				}
+			}
+		}
+	}
 
 	printBuildOutput(build_output, outdir, duration);
 
